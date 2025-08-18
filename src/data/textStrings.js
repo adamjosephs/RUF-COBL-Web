@@ -117,7 +117,7 @@ export const textStrings = {
       totalNPV: "Total {valueType} NPV at risk: {amount}"
     },
     
-    tableTitle: "Risk Up Front Cost Analysis by Month",
+    tableTitle: "Risk Up Front Cost Analysis by Month (Cumulative)",
     tableHeaders: {
       monthsLate: "Months Late",
       lostValue: "Lost {valueType} NPV",
@@ -126,8 +126,7 @@ export const textStrings = {
       nonLinearCosts: "Non-Linear Costs",
       totalCost: "Total Cost"
     },
-    
-    chartTitle: "Risk Up Front Cost of Being Late Over Time",
+    chartTitle: "Risk Up Front Cost of Being Late Over Time (Cumulative)",
     chartInsights: {
       title: "Risk Up Front Chart Insights:",
       nonLinearCosts: {
