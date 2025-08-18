@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { DollarSign, AlertTriangle, TrendingUp, Clock, Users, Calculator, BarChart, Table } from 'lucide-react';
-import { textStrings } from './data/textStrings.js';
-import { industries, industryDefaults } from './data/industryData.js';
-import { config } from './data/config.js';
-import { formatCurrency } from './utils/helpers.js';
+import { textStrings } from './data/textStrings';
+import { industries, industryDefaults } from './data/industryData';
+import { config } from './data/config';
+import { formatCurrency } from './utils/helpers';
 
 const COBLCalculator = () => {
   const [step, setStep] = useState(1);
