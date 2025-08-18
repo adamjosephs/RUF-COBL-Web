@@ -1,22 +1,19 @@
-// Industry data and financial assumptions for Risk Up Front calculations
-// Edit these values to adjust industry-specific parameters
-
 export const industries = [
-  'Biotech/Pharmaceutical',
+  'Biotech/Pharmaceutical', 
   'Financial Technology', 
-  'Software/SaaS',
-  'Hardware/Electronics',
-  'Semiconductor',
-  'Industrial Technology',
-  'Energy/Cleantech',
+  'Software/SaaS', 
+  'Hardware/Electronics', 
+  'Semiconductor', 
+  'Industrial Technology', 
+  'Energy/Cleantech', 
   'Other'
 ];
 
 export const industryDefaults = {
   'Biotech/Pharmaceutical': { 
-    discountRate: 14,    // Annual discount rate (%)
-    rampMonths: 4,       // Months to reach full value
-    costPerPersonPerMonth: 12000 // Monthly cost per team member ($)
+    discountRate: 14, 
+    rampMonths: 4, 
+    costPerPersonPerMonth: 12000 
   },
   'Financial Technology': { 
     discountRate: 11, 
@@ -53,18 +50,4 @@ export const industryDefaults = {
     rampMonths: 4, 
     costPerPersonPerMonth: 12000 
   }
-};
-
-// Business value types
-export const businessValueTypes = {
-  PROFIT: 'profit',
-  SAVINGS: 'savings'
-};
-
-// Default values for calculations
-export const calculationDefaults = {
-  monthlyBusinessValue: 1000000,
-  productLife: 36,
-  maxDelayMonths: 12,
-  simulationDelay: 1500 // ms - artificial delay for calculation animation
 };
