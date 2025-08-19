@@ -5,6 +5,41 @@ import { industries, industryDefaults } from './data/industryData';
 import { config } from './data/config';
 import { formatCurrency, generateYAxisTicks } from './utils/helpers';
 
+// Custom CSS for sidebar mobile behavior
+const sidebarStyles = `
+  .sidebar-content {
+    transition: max-height 0.3s ease-in-out;
+    overflow: hidden;
+  }
+  
+  .sidebar-content.collapsed {
+    max-height: 0;
+  }
+  
+  .sidebar-content.expanded {
+    max-height: 500px;
+    padding-top: 16px;
+  }
+  
+  @media (min-width: 768px) {
+    .sidebar-content {
+      max-height: none !important;
+      padding-top: 0 !important;
+      overflow: visible;
+    }
+  }
+`;
+
+// Inject styles
+if (typeof document !== 'undefined') {
+  const styleElement = document.createElement('style');
+  styleElement.textContent = sidebarStyles;
+  if (!document.head.querySelector('style[data-sidebar-styles]')) {
+    styleElement.setAttribute('data-sidebar-styles', 'true');
+    document.head.appendChild(styleElement);
+  }
+}
+
 const COBLCalculator = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -22,6 +57,7 @@ const COBLCalculator = () => {
   const [results, setResults] = useState(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [viewMode, setViewMode] = useState('summary'); // 'summary', 'table', 'graph'
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -117,6 +153,100 @@ const COBLCalculator = () => {
     }
   };
 
+  const getSidebarContent = () => {
+    const currentStep = !results ? step : 3;
+    
+    switch (currentStep) {
+      case 1:
+        return {
+          title: "Why This Analysis Matters",
+          content: (
+            <div>
+              <p className="mb-4">Late changes destroy project value. Most teams track obvious costs but miss monthly business value erosion plus sudden threshold losses.</p>
+              <p className="mb-4 font-semibold">Key Inputs:</p>
+              <ul className="list-disc pl-4 space-y-1 mb-4">
+                <li>Monthly profit/savings at steady state</li>
+                <li>Critical deadlines that trigger major losses</li>
+                <li>Extended team funding (if counted as real cost)</li>
+              </ul>
+              <p>Projects still need ramp time when late - you lose peak value while market windows close.</p>
+            </div>
+          )
+        };
+      case 2:
+        return {
+          title: "Step-Function Risks",
+          content: (
+            <div>
+              <p className="mb-4">Linear costs accumulate gradually. Non-linear costs hit suddenly at specific thresholds.</p>
+              <p className="mb-2 font-semibold">Examples:</p>
+              <ul className="list-disc pl-4 space-y-1 mb-4">
+                <li>Customer technology lock-in</li>
+                <li>Board milestone reviews</li>
+                <li>Regulatory windows</li>
+                <li>Manufacturing slots</li>
+              </ul>
+              <p>Being 4 months late might cost $50M more than 3 months late - not from the extra month, but crossing a threshold.</p>
+            </div>
+          )
+        };
+      case 3:
+        return {
+          title: "Calculation Method",
+          content: (
+            <div>
+              <p className="mb-2"><strong>Linear:</strong> Monthly value × delay + team costs × delay</p>
+              <p className="mb-4"><strong>Non-Linear:</strong> Discrete losses at delay thresholds</p>
+              <p className="mb-2 font-semibold">Key Insights:</p>
+              <ul className="list-disc pl-4 space-y-1 mb-4">
+                <li>Costs accelerate non-linearly over time due to compounding effects</li>
+                <li>Early action significantly reduces total cost impact</li>
+                <li>Non-linear costs can create sudden jumps in total expense</li>
+              </ul>
+              <p className="font-semibold">The Point:</p>
+              <p>These numbers show whether you're investing enough in upfront risk mitigation. Most teams dramatically under-invest.</p>
+            </div>
+          )
+        };
+      default:
+        return { title: "", content: null };
+    }
+  };
+
+  const renderSidebar = () => {
+    const sidebarContent = getSidebarContent();
+    
+    return (
+      <div className="sidebar-container">
+        {/* Mobile Toggle Button */}
+        <button
+          className="sidebar-toggle md:hidden w-full bg-blue-600 text-white p-3 rounded-lg font-medium flex justify-between items-center min-h-[44px]"
+          onClick={() => setSidebarExpanded(!sidebarExpanded)}
+        >
+          <span>Understanding Cost of Being Late</span>
+          <svg 
+            className={`w-5 h-5 transform transition-transform ${sidebarExpanded ? 'rotate-180' : ''}`}
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        
+        {/* Sidebar Content */}
+        <div className={`sidebar-content ${sidebarExpanded ? 'expanded' : 'collapsed'} md:block`}>
+          <div className="sidebar bg-gray-50 border border-gray-200 p-6 rounded-lg md:sticky md:top-5 text-sm leading-relaxed h-fit">
+            <h3 className="font-bold text-base mb-3 text-gray-900">{sidebarContent.title}</h3>
+            <div className="text-gray-700">
+              {sidebarContent.content}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderSimpleForm = () => {
     if (step === 1) {
       return (
@@ -151,11 +281,6 @@ const COBLCalculator = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 {textStrings.step1.monthlyBusinessValueLabel}
               </label>
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
-                <p className="text-sm text-yellow-800">
-                  <strong>Important:</strong> {textStrings.step1.businessValueWarning}
-                </p>
-              </div>
               <div className="space-y-3">
                 <div>
                   <label className="block text-sm text-gray-600 mb-2">
@@ -210,13 +335,6 @@ const COBLCalculator = () => {
               />
               <p className="text-sm text-gray-500 mt-1">
                 {textStrings.step1.productLifeHelpText}
-              </p>
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-              <h3 className="font-medium text-blue-900 mb-2">{textStrings.step1.teamCostTitle}</h3>
-              <p className="text-sm text-blue-800">
-                <strong>{textStrings.step1.teamCostDescription}</strong>
               </p>
             </div>
 
@@ -410,6 +528,10 @@ const COBLCalculator = () => {
             </div>
           </div>
 
+          <div className="text-center text-sm text-gray-600 mb-4">
+            Results rounded to two significant digits. It's important to distinguish between usefulness and accuracy.
+          </div>
+
           <div className="flex justify-center space-x-4">
             <button
               onClick={() => setViewMode('table')}
@@ -425,15 +547,6 @@ const COBLCalculator = () => {
               <BarChart className="h-4 w-4 inline mr-1" />
               {textStrings.results.graphButton}
             </button>
-          </div>
-
-          <div className="bg-blue-50 p-6 rounded-lg">
-            <h3 className="font-medium text-blue-900 mb-3">{textStrings.results.keyInsightsTitle}</h3>
-            <ul className="space-y-2 text-sm text-blue-800">
-              <li>• {textStrings.results.insight1}</li>
-              <li>• {textStrings.results.insight2}</li>
-              <li>• {textStrings.results.insight3}</li>
-            </ul>
           </div>
         </div>
       );
@@ -598,7 +711,7 @@ const COBLCalculator = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-6">
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
             <div className="flex justify-center items-center mb-4">
@@ -612,22 +725,33 @@ const COBLCalculator = () => {
             </p>
           </div>
 
-          {!results ? renderSimpleForm() : renderResults()}
-
-          {results && (
-            <div className="mt-8 text-center">
-              <button
-                onClick={() => {
-                  setResults(null);
-                  setStep(1);
-                  setViewMode('summary');
-                }}
-                className="bg-gray-600 text-white py-2 px-6 rounded-lg font-medium hover:bg-gray-700 transition-colors"
-              >
-                {textStrings.results.newCalculationButton}
-              </button>
+          {/* Grid Layout: Sidebar on left, Main content on right for desktop */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {/* Sidebar - 1/4 width on desktop, full width on mobile */}
+            <div className="md:col-span-1">
+              {renderSidebar()}
             </div>
-          )}
+            
+            {/* Main Content - 3/4 width on desktop, full width on mobile */}
+            <div className="md:col-span-3">
+              {!results ? renderSimpleForm() : renderResults()}
+
+              {results && (
+                <div className="mt-8 text-center">
+                  <button
+                    onClick={() => {
+                      setResults(null);
+                      setStep(1);
+                      setViewMode('summary');
+                    }}
+                    className="bg-gray-600 text-white py-2 px-6 rounded-lg font-medium hover:bg-gray-700 transition-colors"
+                  >
+                    {textStrings.results.newCalculationButton}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
