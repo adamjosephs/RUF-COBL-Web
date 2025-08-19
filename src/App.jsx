@@ -162,50 +162,113 @@ const COBLCalculator = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                {textStrings.step1.businessValueLabel}
+                {textStrings.step1.monthlyBusinessValueLabel}
               </label>
-              <input
-                type="number"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={textStrings.step1.businessValuePlaceholder}
-                value={formData.monthlyBusinessValue}
-                onChange={(e) => handleInputChange('monthlyBusinessValue', e.target.value)}
-              />
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
+                <p className="text-sm text-yellow-800">
+                  <strong>Important:</strong> {textStrings.step1.businessValueWarning}
+                </p>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm text-gray-600 mb-2">
+                    {textStrings.step1.valueTypePrompt}
+                  </label>
+                  <select 
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={formData.businessValueType}
+                    onChange={(e) => handleInputChange('businessValueType', e.target.value)}
+                  >
+                    <option value="">{textStrings.step1.valueTypePlaceholder}</option>
+                    <option value="profit">{textStrings.step1.profitOption}</option>
+                    <option value="savings">{textStrings.step1.savingsOption}</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-600 mb-2">
+                    {formData.businessValueType === 'profit' ? 
+                      textStrings.step1.profitAmountLabel : 
+                      formData.businessValueType === 'savings' ?
+                      textStrings.step1.savingsAmountLabel :
+                      textStrings.step1.defaultAmountLabel}
+                  </label>
+                  <input 
+                    type="number"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder={textStrings.step1.amountPlaceholder}
+                    value={formData.monthlyBusinessValue}
+                    onChange={(e) => handleInputChange('monthlyBusinessValue', e.target.value)}
+                  />
+                  <p className="text-sm text-gray-500 mt-1">
+                    {formData.businessValueType === 'profit' ? 
+                      textStrings.step1.profitHelpText : 
+                      formData.businessValueType === 'savings' ?
+                      textStrings.step1.savingsHelpText :
+                      textStrings.step1.defaultHelpText}
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                {textStrings.step1.businessValueTypeLabel}
+                {textStrings.step1.productLifeLabel}
               </label>
-              <div className="flex space-x-4">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="businessValueType"
-                    value="profit"
-                    checked={formData.businessValueType === 'profit'}
-                    onChange={(e) => handleInputChange('businessValueType', e.target.value)}
-                    className="mr-2"
-                  />
-                  {textStrings.step1.profitOption}
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="businessValueType"
-                    value="savings"
-                    checked={formData.businessValueType === 'savings'}
-                    onChange={(e) => handleInputChange('businessValueType', e.target.value)}
-                    className="mr-2"
-                  />
-                  {textStrings.step1.savingsOption}
-                </label>
-              </div>
+              <input 
+                type="number"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder={textStrings.step1.productLifePlaceholder}
+                value={formData.productLife}
+                onChange={(e) => handleInputChange('productLife', e.target.value)}
+              />
+              <p className="text-sm text-gray-500 mt-1">
+                {textStrings.step1.productLifeHelpText}
+              </p>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+              <h3 className="font-medium text-blue-900 mb-2">{textStrings.step1.teamCostTitle}</h3>
+              <p className="text-sm text-blue-800">
+                <strong>{textStrings.step1.teamCostDescription}</strong>
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {textStrings.step1.teamSizeLabel}
+              </label>
+              <input 
+                type="number"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder={textStrings.step1.teamSizePlaceholder}
+                value={formData.teamSize}
+                onChange={(e) => handleInputChange('teamSize', e.target.value)}
+              />
+              <p className="text-sm text-gray-500 mt-1">
+                {textStrings.step1.teamSizeHelpText}
+              </p>
+            </div>
+
+            <div className="p-4 border border-gray-200 rounded-lg">
+              <label className="flex items-center space-x-3">
+                <input 
+                  type="checkbox"
+                  checked={formData.includeTeamBurn}
+                  onChange={(e) => handleInputChange('includeTeamBurn', e.target.checked)}
+                  className="h-5 w-5 text-blue-600"
+                />
+                <div>
+                  <div className="font-medium">{textStrings.step1.includeTeamBurnLabel}</div>
+                  <div className="text-sm text-gray-600">
+                    {textStrings.step1.includeTeamBurnDescription}
+                  </div>
+                </div>
+              </label>
             </div>
 
             <button
               onClick={() => setStep(2)}
-              disabled={!formData.industry || !formData.teamSize || !formData.monthlyBusinessValue || !formData.businessValueType}
+              disabled={!formData.industry || !formData.monthlyBusinessValue || !formData.businessValueType || !formData.productLife}
               className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
             >
               {textStrings.step1.continueButton}
@@ -228,32 +291,6 @@ const COBLCalculator = () => {
           </div>
 
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {textStrings.step2.productLifeLabel}
-              </label>
-              <input
-                type="number"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={textStrings.step2.productLifePlaceholder}
-                value={formData.productLife}
-                onChange={(e) => handleInputChange('productLife', e.target.value)}
-              />
-            </div>
-
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="includeTeamBurn"
-                checked={formData.includeTeamBurn}
-                onChange={(e) => handleInputChange('includeTeamBurn', e.target.checked)}
-                className="mr-3"
-              />
-              <label htmlFor="includeTeamBurn" className="text-sm text-gray-700">
-                {textStrings.step2.includeTeamBurnLabel}
-              </label>
-            </div>
-
             <div className="border-t pt-4">
               <h3 className="font-medium text-gray-900 mb-3">{textStrings.step2.nonLinearCostsTitle}</h3>
               
