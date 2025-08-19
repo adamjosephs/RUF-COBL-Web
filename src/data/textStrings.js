@@ -44,11 +44,11 @@ export const textStrings = {
     otherCostValueLabel: "What would this non-linear cost be worth? ($)",
     otherCostValuePlaceholder: "e.g., 2000000",
     backButton: "Back",
-    calculateButton: "Calculate Risk Up Front Cost",
+    calculateButton: "Calculate Risk Up Front Cost of Being Late",
     calculatingButton: "Calculating..."
   },
   results: {
-    title: "Risk Up Front Cost Results",
+    title: "Risk Up Front Cost of Being Late Results",
     description: "Your cost of being late analysis",
     oneMonthLabel: "1 Month Late",
     threeMonthLabel: "3 Months Late",
@@ -63,7 +63,7 @@ export const textStrings = {
     newCalculationButton: "New Calculation"
   },
   table: {
-    title: "Risk Up Front Cost Analysis by Month (Cumulative)",
+    title: "Risk Up Front Cost of Being Late Analysis by Month (Cumulative)",
     backButton: "← Back to Summary",
     monthsLateHeader: "Months Late",
     lostValueHeader: "Lost",
@@ -77,8 +77,8 @@ export const textStrings = {
     backButton: "← Back to Summary",
     xAxisLabel: "Months Late",
     insightsTitle: "Risk Up Front Chart Insights:",
-    insight1: "The cost curve shows exponential growth patterns",
-    insight2: "Early months have disproportionate impact on total costs",
-    insight3: "Non-linear events create visible spikes in the timeline"
+    insight1: "You are likely underinvesting in mitgation this risk.",
+    insight2: "Early months have disproportionate impact on total costs.",
+    insight3: "Non-linear events create visible spikes in the timeline."
   }
 };

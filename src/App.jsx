@@ -3,7 +3,7 @@ import { DollarSign, AlertTriangle, TrendingUp, Clock, Users, Calculator, BarCha
 import { textStrings } from './data/textStrings';
 import { industries, industryDefaults } from './data/industryData';
 import { config } from './data/config';
-import { formatCurrency } from './utils/helpers';
+import { formatCurrency, generateYAxisTicks } from './utils/helpers';
 
 const COBLCalculator = () => {
   const [step, setStep] = useState(1);
@@ -505,38 +505,69 @@ const COBLCalculator = () => {
           <div className="bg-white p-6 rounded-lg border">
             <div className="relative" style={{ height: `${chartHeight + 60}px` }}>
               {/* Y-axis labels */}
-              <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 pr-2">
-                <span>{formatCurrency(maxCost)}</span>
-                <span>{formatCurrency(maxCost * 0.75)}</span>
-                <span>{formatCurrency(maxCost * 0.5)}</span>
-                <span>{formatCurrency(maxCost * 0.25)}</span>
-                <span>$0</span>
-              </div>
+              {(() => {
+                const yTicks = generateYAxisTicks(maxCost);
+                const maxTick = yTicks[0]; // Highest value for scaling
+                
+                return (
+                  <div className="absolute left-0 top-0 flex flex-col justify-between text-xs text-gray-500 pr-2" style={{ height: `${chartHeight}px` }}>
+                    {yTicks.map((tick, index) => (
+                      <span key={index} className="leading-none">
+                        {formatCurrency(tick)}
+                      </span>
+                    ))}
+                  </div>
+                );
+              })()}
               
               {/* Chart area */}
               <div className="ml-16 relative" style={{ height: `${chartHeight}px` }}>
-                {results.monthlyData.slice(1).map((data, index) => {
-                  const month = index + 1;
-                  const heightPercent = (data.totalCost / maxCost) * 100;
-                  const barHeight = (heightPercent / 100) * chartHeight;
+                {(() => {
+                  const yTicks = generateYAxisTicks(maxCost);
+                  const maxTick = yTicks[0]; // Use the highest tick for scaling instead of maxCost
                   
-                  return (
-                    <div
-                      key={month}
-                      className="absolute bottom-0 bg-red-500 hover:bg-red-600 transition-colors cursor-pointer group"
-                      style={{
-                        left: `${(month - 1) * (100 / 12)}%`,
-                        width: `${100 / 12 - 1}%`,
-                        height: `${barHeight}px`
-                      }}
-                      title={`Month ${month}: ${formatCurrency(data.totalCost)}`}
-                    >
-                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 bg-black text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap mb-1">
-                        {formatCurrency(data.totalCost)}
+                  return results.monthlyData.slice(1).map((data, index) => {
+                    const month = index + 1;
+                    const heightPercent = (data.totalCost / maxTick) * 100;
+                    const barHeight = (heightPercent / 100) * chartHeight;
+                    
+                    // Create a gradient effect from light to dark red
+                    const getBarColor = (month) => {
+                      const colors = [
+                        'bg-red-100', 'bg-red-200', 'bg-red-300', 'bg-red-400',
+                        'bg-red-500', 'bg-red-600', 'bg-red-700', 'bg-red-800',
+                        'bg-red-900', 'bg-red-950', 'bg-red-950', 'bg-red-950'
+                      ];
+                      return colors[month - 1] || 'bg-red-950';
+                    };
+                    
+                    const getHoverColor = (month) => {
+                      const hoverColors = [
+                        'hover:bg-red-200', 'hover:bg-red-300', 'hover:bg-red-400', 'hover:bg-red-500',
+                        'hover:bg-red-600', 'hover:bg-red-700', 'hover:bg-red-800', 'hover:bg-red-900',
+                        'hover:bg-red-950', 'hover:bg-red-950', 'hover:bg-red-950', 'hover:bg-red-950'
+                      ];
+                      return hoverColors[month - 1] || 'hover:bg-red-950';
+                    };
+                    
+                    return (
+                      <div
+                        key={month}
+                        className={`absolute bottom-0 ${getBarColor(month)} ${getHoverColor(month)} transition-colors cursor-pointer group`}
+                        style={{
+                          left: `${(month - 1) * (100 / 12)}%`,
+                          width: `${100 / 12 - 1}%`,
+                          height: `${barHeight}px`
+                        }}
+                        title={`Month ${month}: ${formatCurrency(data.totalCost)}`}
+                      >
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 bg-black text-white px-2 py-1 rounded text-xs opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap mb-1">
+                          {formatCurrency(data.totalCost)}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  });
+                })()}
               </div>
               
               {/* X-axis */}
