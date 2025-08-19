@@ -277,42 +277,71 @@ const COBLCalculator = () => {
             </p>
           </div>
 
-          <div className="space-y-4">
-            <div className="border-t pt-4">
-              <h3 className="font-medium text-gray-900 mb-3">{textStrings.step2.nonLinearCostsTitle}</h3>
-              
+          <div className="space-y-6">
+            {/* Customer Loss Question */}
+            <div className="p-4 border border-gray-200 rounded-lg">
+              <h3 className="font-medium text-gray-900 mb-3">
+                {textStrings.step2.customerLossTitle}
+              </h3>
               <div className="space-y-3">
-                <div className="flex space-x-3">
-                  <input
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {textStrings.step2.customerLossMonthLabel}
+                  </label>
+                  <input 
                     type="number"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder={textStrings.step2.customerLossMonthPlaceholder}
                     value={formData.customerLossMonth}
                     onChange={(e) => handleInputChange('customerLossMonth', e.target.value)}
-                    className="flex-1 p-2 border border-gray-300 rounded-lg"
                   />
-                  <input
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {textStrings.step2.customerLossValueLabel}
+                  </label>
+                  <input 
                     type="number"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder={textStrings.step2.customerLossValuePlaceholder}
                     value={formData.customerLossValue}
                     onChange={(e) => handleInputChange('customerLossValue', e.target.value)}
-                    className="flex-1 p-2 border border-gray-300 rounded-lg"
                   />
                 </div>
-                
-                <div className="flex space-x-3">
-                  <input
+              </div>
+            </div>
+
+            {/* Other Critical Cost Question */}
+            <div className="p-4 border border-gray-200 rounded-lg">
+              <h3 className="font-medium text-gray-900 mb-3">
+                {textStrings.step2.otherCostTitle}
+              </h3>
+              <div className="mb-3 text-sm text-gray-600">
+                <strong>{textStrings.step2.otherCostExamples}</strong>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {textStrings.step2.otherCostMonthLabel}
+                  </label>
+                  <input 
                     type="number"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder={textStrings.step2.otherCostMonthPlaceholder}
                     value={formData.otherCostMonth}
                     onChange={(e) => handleInputChange('otherCostMonth', e.target.value)}
-                    className="flex-1 p-2 border border-gray-300 rounded-lg"
                   />
-                  <input
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {textStrings.step2.otherCostValueLabel}
+                  </label>
+                  <input 
                     type="number"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder={textStrings.step2.otherCostValuePlaceholder}
                     value={formData.otherCostValue}
                     onChange={(e) => handleInputChange('otherCostValue', e.target.value)}
-                    className="flex-1 p-2 border border-gray-300 rounded-lg"
                   />
                 </div>
               </div>
