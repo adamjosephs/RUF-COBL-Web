@@ -1,10 +1,23 @@
+// Round to two significant digits to avoid false precision
+const roundToTwoSignificantDigits = (num) => {
+  if (num === 0) return 0;
+  
+  const magnitude = Math.pow(10, Math.floor(Math.log10(Math.abs(num))));
+  const normalized = num / magnitude;
+  const rounded = Math.round(normalized * 10) / 10; // Round to 1 decimal place
+  
+  return rounded * magnitude;
+};
+
 export const formatCurrency = (amount) => {
+  const roundedAmount = roundToTwoSignificantDigits(amount);
+  
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(amount);
+  }).format(roundedAmount);
 };
 
 // Helper function to generate nice Y-axis tick marks
