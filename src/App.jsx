@@ -149,19 +149,6 @@ const COBLCalculator = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                {textStrings.step1.teamSizeLabel}
-              </label>
-              <input
-                type="number"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={textStrings.step1.teamSizePlaceholder}
-                value={formData.teamSize}
-                onChange={(e) => handleInputChange('teamSize', e.target.value)}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
                 {textStrings.step1.monthlyBusinessValueLabel}
               </label>
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
