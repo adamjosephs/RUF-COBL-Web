@@ -493,30 +493,6 @@ const COBLCalculator = () => {
             </div>
           </div>
 
-          {/* View Toggle */}
-          <div className="flex space-x-2 justify-center">
-            <button 
-              onClick={() => setViewMode('summary')}
-              className={`px-4 py-2 rounded-lg font-medium ${viewMode === 'summary' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
-            >
-              {uxText.results.summary.buttons.summary}
-            </button>
-            <button 
-              onClick={() => setViewMode('table')}
-              className={`px-4 py-2 rounded-lg font-medium ${viewMode === 'table' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
-            >
-              <Table className="h-4 w-4 inline mr-1" />
-              {uxText.results.summary.buttons.table}
-            </button>
-            <button 
-              onClick={() => setViewMode('graph')}
-              className={`px-4 py-2 rounded-lg font-medium ${viewMode === 'graph' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
-            >
-              <BarChart className="h-4 w-4 inline mr-1" />
-              {uxText.results.summary.buttons.graph}
-            </button>
-          </div>
-
           {/* Key Insights */}
           <div className="bg-green-50 border border-green-200 rounded-lg p-6">
             <h3 className="text-lg font-bold text-gray-900 mb-4">
@@ -545,6 +521,136 @@ const COBLCalculator = () => {
                 <span><strong>{uxText.results.summary.sections.insights.totalValueAtRisk}:</strong> {formatCurrency(results.onTimeNPV)}</span>
               </li>
             </ul>
+          </div>
+
+          {/* Integrated Graph */}
+          <div className="bg-white p-6 rounded-lg border">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">
+              {uxText.results.graph.title}
+            </h3>
+            <div className="relative" style={{ height: `${300 + 60}px` }}>
+              {/* Y-axis labels */}
+              <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 pr-2">
+                <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)))}</span>
+                <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)) * 0.75)}</span>
+                <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)) * 0.5)}</span>
+                <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)) * 0.25)}</span>
+                <span>$0</span>
+              </div>
+              
+              {/* Chart area */}
+              <div className="ml-20 mr-4">
+                <div className="flex items-end justify-between h-80 border-l border-b border-gray-300">
+                  {results.monthlyData.map((data, i) => {
+                    const maxCost = Math.max(...results.monthlyData.map(d => d.totalCost));
+                    const heightPercent = maxCost > 0 ? (data.totalCost / maxCost) * 100 : 0;
+                    const barHeight = (heightPercent / 100) * 300;
+                    
+                    return (
+                      <div key={i} className="flex flex-col items-center flex-1 mx-1">
+                        {/* Value label on top */}
+                        <div className="text-xs text-gray-600 mb-1 h-8 flex items-end">
+                          {data.totalCost > 0 && formatCurrency(data.totalCost)}
+                        </div>
+                        
+                        {/* Bar */}
+                        <div className="w-full max-w-8 relative">
+                          <div 
+                            className={`w-full rounded-t transition-all duration-500 ${
+                              i === 0 ? 'bg-green-500' : 
+                              i <= 3 ? 'bg-yellow-500' : 
+                              i <= 6 ? 'bg-orange-500' : 'bg-red-500'
+                            }`}
+                            style={{ 
+                              height: `${barHeight}px`,
+                              minHeight: data.totalCost > 0 ? '4px' : '0px'
+                            }}
+                          ></div>
+                        </div>
+                        
+                        {/* Month label */}
+                        <div className="text-xs text-gray-700 mt-2 font-medium">
+                          {i === 0 ? uxText.results.graph.labels.onTime : `${data.month}m`}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                {/* X-axis label */}
+                <div className="text-center text-sm text-gray-600 mt-4">
+                  {uxText.results.graph.labels.monthsOfDelay}
+                </div>
+              </div>
+            </div>
+
+            {/* Legend */}
+            <div className="grid grid-cols-2 gap-4 text-sm mt-4">
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-green-500 rounded"></div>
+                <span>{uxText.results.graph.legend.onTime}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-yellow-500 rounded"></div>
+                <span>{uxText.results.graph.legend.oneToThreeMonths}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-orange-500 rounded"></div>
+                <span>{uxText.results.graph.legend.fourToSixMonths}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-red-500 rounded"></div>
+                <span>{uxText.results.graph.legend.sevenPlusMonths}</span>
+              </div>
+            </div>
+
+            {/* Key Insights for Graph */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-4">
+              <h4 className="font-medium text-gray-900 mb-2">{uxText.results.graph.sections.insights.title}</h4>
+              <ul className="text-sm text-gray-700 space-y-1">
+                <li>• <strong>{uxText.results.graph.sections.insights.nonLinearCosts}:</strong> {
+                  (() => {
+                    const customerMonth = results.params.customerLossMonth;
+                    const otherMonth = results.params.otherCostMonth;
+                    if (customerMonth > 0 && otherMonth > 0) {
+                      return `${uxText.results.graph.sections.insights.createJumps} ${customerMonth} ${uxText.results.graph.sections.insights.and} ${otherMonth}`;
+                    } else if (customerMonth > 0) {
+                      return `${uxText.results.graph.sections.insights.createJump} ${customerMonth}`;
+                    } else if (otherMonth > 0) {
+                      return `${uxText.results.graph.sections.insights.createJump} ${otherMonth}`;
+                    } else {
+                      return uxText.results.graph.sections.insights.noneApplied;
+                    }
+                  })()
+                }</li>
+                {results.params.includeTeamBurn && <li>• <strong>{uxText.results.graph.sections.insights.linearTeamCosts}:</strong> {formatCurrency(results.params.teamBurnRate)}/{uxText.results.graph.sections.insights.perMonth}</li>}
+                <li>• <strong>{uxText.results.graph.sections.insights.linearValueLoss}</strong> {uxText.results.graph.sections.insights.acceleratesWithDelays} {results.discountRate}% {uxText.results.graph.sections.insights.discountRate}</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* View Toggle */}
+          <div className="flex space-x-2 justify-center">
+            <button 
+              onClick={() => setViewMode('summary')}
+              className={`px-4 py-2 rounded-lg font-medium ${viewMode === 'summary' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+            >
+              {uxText.results.summary.buttons.summary}
+            </button>
+            <button 
+              onClick={() => setViewMode('table')}
+              className={`px-4 py-2 rounded-lg font-medium ${viewMode === 'table' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+            >
+              <Table className="h-4 w-4 inline mr-1" />
+              {uxText.results.summary.buttons.table}
+            </button>
+            <button 
+              onClick={() => setViewMode('graph')}
+              className={`px-4 py-2 rounded-lg font-medium ${viewMode === 'graph' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
+            >
+              <BarChart className="h-4 w-4 inline mr-1" />
+              {uxText.results.summary.buttons.graph}
+            </button>
           </div>
         </div>
       );
@@ -596,9 +702,6 @@ const COBLCalculator = () => {
     }
 
     if (viewMode === 'graph') {
-      const maxCost = Math.max(...results.monthlyData.map(d => d.totalCost));
-      const chartHeight = 300;
-      
       return (
         <div className="space-y-6">
           <div className="text-center">
@@ -614,13 +717,13 @@ const COBLCalculator = () => {
           </div>
 
           <div className="bg-white p-6 rounded-lg border">
-            <div className="relative" style={{ height: `${chartHeight + 60}px` }}>
+            <div className="relative" style={{ height: `${300 + 60}px` }}>
               {/* Y-axis labels */}
               <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 pr-2">
-                <span>{formatCurrency(maxCost)}</span>
-                <span>{formatCurrency(maxCost * 0.75)}</span>
-                <span>{formatCurrency(maxCost * 0.5)}</span>
-                <span>{formatCurrency(maxCost * 0.25)}</span>
+                <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)))}</span>
+                <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)) * 0.75)}</span>
+                <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)) * 0.5)}</span>
+                <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)) * 0.25)}</span>
                 <span>$0</span>
               </div>
               
@@ -628,8 +731,9 @@ const COBLCalculator = () => {
               <div className="ml-20 mr-4">
                 <div className="flex items-end justify-between h-80 border-l border-b border-gray-300">
                   {results.monthlyData.map((data, i) => {
+                    const maxCost = Math.max(...results.monthlyData.map(d => d.totalCost));
                     const heightPercent = maxCost > 0 ? (data.totalCost / maxCost) * 100 : 0;
-                    const barHeight = (heightPercent / 100) * chartHeight;
+                    const barHeight = (heightPercent / 100) * 300;
                     
                     return (
                       <div key={i} className="flex flex-col items-center flex-1 mx-1">
@@ -668,50 +772,50 @@ const COBLCalculator = () => {
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Legend */}
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-green-500 rounded"></div>
-              <span>{uxText.results.graph.legend.onTime}</span>
+            {/* Legend */}
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-green-500 rounded"></div>
+                <span>{uxText.results.graph.legend.onTime}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-yellow-500 rounded"></div>
+                <span>{uxText.results.graph.legend.oneToThreeMonths}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-orange-500 rounded"></div>
+                <span>{uxText.results.graph.legend.fourToSixMonths}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-red-500 rounded"></div>
+                <span>{uxText.results.graph.legend.sevenPlusMonths}</span>
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-              <span>{uxText.results.graph.legend.oneToThreeMonths}</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-orange-500 rounded"></div>
-              <span>{uxText.results.graph.legend.fourToSixMonths}</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-4 h-4 bg-red-500 rounded"></div>
-              <span>{uxText.results.graph.legend.sevenPlusMonths}</span>
-            </div>
-          </div>
 
-          {/* Key Insights */}
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2">{uxText.results.graph.sections.insights.title}</h4>
-            <ul className="text-sm text-gray-700 space-y-1">
-              <li>• <strong>{uxText.results.graph.sections.insights.nonLinearCosts}:</strong> {
-                (() => {
-                  const customerMonth = results.params.customerLossMonth;
-                  const otherMonth = results.params.otherCostMonth;
-                  if (customerMonth > 0 && otherMonth > 0) {
-                    return `${uxText.results.graph.sections.insights.createJumps} ${customerMonth} ${uxText.results.graph.sections.insights.and} ${otherMonth}`;
-                  } else if (customerMonth > 0) {
-                    return `${uxText.results.graph.sections.insights.createJump} ${customerMonth}`;
-                  } else if (otherMonth > 0) {
-                    return `${uxText.results.graph.sections.insights.createJump} ${otherMonth}`;
-                  } else {
-                    return uxText.results.graph.sections.insights.noneApplied;
-                  }
-                })()
-              }</li>
-              {results.params.includeTeamBurn && <li>• <strong>{uxText.results.graph.sections.insights.linearTeamCosts}:</strong> {formatCurrency(results.params.teamBurnRate)}/{uxText.results.graph.sections.insights.perMonth}</li>}
-              <li>• <strong>{uxText.results.graph.sections.insights.linearValueLoss}</strong> {uxText.results.graph.sections.insights.acceleratesWithDelays} {results.discountRate}% {uxText.results.graph.sections.insights.discountRate}</li>
-            </ul>
+            {/* Key Insights */}
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <h4 className="font-medium text-gray-900 mb-2">{uxText.results.graph.sections.insights.title}</h4>
+              <ul className="text-sm text-gray-700 space-y-1">
+                <li>• <strong>{uxText.results.graph.sections.insights.nonLinearCosts}:</strong> {
+                  (() => {
+                    const customerMonth = results.params.customerLossMonth;
+                    const otherMonth = results.params.otherCostMonth;
+                    if (customerMonth > 0 && otherMonth > 0) {
+                      return `${uxText.results.graph.sections.insights.createJumps} ${customerMonth} ${uxText.results.graph.sections.insights.and} ${otherMonth}`;
+                    } else if (customerMonth > 0) {
+                      return `${uxText.results.graph.sections.insights.createJump} ${customerMonth}`;
+                    } else if (otherMonth > 0) {
+                      return `${uxText.results.graph.sections.insights.createJump} ${otherMonth}`;
+                    } else {
+                      return uxText.results.graph.sections.insights.noneApplied;
+                    }
+                  })()
+                }</li>
+                {results.params.includeTeamBurn && <li>• <strong>{uxText.results.graph.sections.insights.linearTeamCosts}:</strong> {formatCurrency(results.params.teamBurnRate)}/{uxText.results.graph.sections.insights.perMonth}</li>}
+                <li>• <strong>{uxText.results.graph.sections.insights.linearValueLoss}</strong> {uxText.results.graph.sections.insights.acceleratesWithDelays} {results.discountRate}% {uxText.results.graph.sections.insights.discountRate}</li>
+              </ul>
+            </div>
           </div>
         </div>
       );
