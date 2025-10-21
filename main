@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { DollarSign, AlertTriangle, TrendingUp, Clock, Users, Calculator, BarChart, Table } from 'lucide-react';
+import uxText from './uxText.json'; // Import the JSON file containing all UX text
 
 const COBLCalculator = () => {
   const [step, setStep] = useState(1);
@@ -177,24 +178,24 @@ const COBLCalculator = () => {
         <div className="space-y-6">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Risk Up Front Quick Assessment
+              {uxText.step1.title}
             </h2>
             <p className="text-gray-600">
-              Calculate linear and non-linear costs in under 60 seconds
+              {uxText.step1.subtitle}
             </p>
           </div>
 
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Industry
+                {uxText.step1.labels.industry}
               </label>
               <select 
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 value={formData.industry}
                 onChange={(e) => handleInputChange('industry', e.target.value)}
               >
-                <option value="">Select your industry</option>
+                <option value="">{uxText.step1.placeholders.industry}</option>
                 {industries.map(industry => (
                   <option key={industry} value={industry}>{industry}</option>
                 ))}
@@ -203,50 +204,49 @@ const COBLCalculator = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Monthly Business Value
+                {uxText.step1.labels.monthlyBusinessValue}
               </label>
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
                 <p className="text-sm text-yellow-800">
-                  <strong>Important:</strong> For revenue-generating projects, we need <strong>profit</strong> (revenue minus costs), not just revenue. 
-                  This gives us the actual business value at risk when you're late.
+                  <strong>{uxText.step1.messages.important}</strong> {uxText.step1.messages.businessValueNote}
                 </p>
               </div>
               <div className="space-y-3">
                 <div>
                   <label className="block text-sm text-gray-600 mb-2">
-                    What type of value does this project deliver each month?
+                    {uxText.step1.labels.businessValueType}
                   </label>
                   <select 
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     value={formData.businessValueType}
                     onChange={(e) => handleInputChange('businessValueType', e.target.value)}
                   >
-                    <option value="">Select value type</option>
-                    <option value="profit">Lost Profit (revenue-generating project)</option>
-                    <option value="savings">Lost Savings (cost-reduction project)</option>
+                    <option value="">{uxText.step1.placeholders.businessValueType}</option>
+                    <option value="profit">{uxText.step1.options.profit}</option>
+                    <option value="savings">{uxText.step1.options.savings}</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm text-gray-600 mb-2">
                     {formData.businessValueType === 'profit' ? 
-                      'Monthly profit at full scale ($)' : 
+                      uxText.step1.labels.monthlyProfit : 
                       formData.businessValueType === 'savings' ?
-                      'Monthly cost savings when deployed ($)' :
-                      'Monthly business value ($)'}
+                      uxText.step1.labels.monthlySavings :
+                      uxText.step1.labels.monthlyBusinessValue}
                   </label>
                   <input 
                     type="number"
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="e.g., 500000"
+                    placeholder={uxText.step1.placeholders.monthlyBusinessValue}
                     value={formData.monthlyBusinessValue}
                     onChange={(e) => handleInputChange('monthlyBusinessValue', e.target.value)}
                   />
                   <p className="text-sm text-gray-500 mt-1">
                     {formData.businessValueType === 'profit' ? 
-                      'Profit per month once your product reaches steady state (profit = revenue minus costs)' : 
+                      uxText.step1.helpTexts.profit : 
                       formData.businessValueType === 'savings' ?
-                      'How much you save in operating costs each month when this is deployed' :
-                      'The business value you lose each month by being late'}
+                      uxText.step1.helpTexts.savings :
+                      uxText.step1.helpTexts.businessValue}
                   </p>
                 </div>
               </div>
@@ -254,41 +254,40 @@ const COBLCalculator = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Product Lifetime (months)
+                {uxText.step1.labels.productLife}
               </label>
               <input 
                 type="number"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g., 36"
+                placeholder={uxText.step1.placeholders.productLife}
                 value={formData.productLife}
                 onChange={(e) => handleInputChange('productLife', e.target.value)}
               />
               <p className="text-sm text-gray-500 mt-1">
-                How long will this project deliver value?
+                {uxText.step1.helpTexts.productLife}
               </p>
             </div>
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-              <h3 className="font-medium text-blue-900 mb-2">Team Cost Analysis (Risk Up Front Methodology)</h3>
+              <h3 className="font-medium text-blue-900 mb-2">{uxText.step1.sections.teamCost.title}</h3>
               <p className="text-sm text-blue-800">
-                <strong>If you'd like to calculate the additional cost of funding the team longer than planned, complete these fields. Otherwise, leave them blank.</strong> 
-                This represents the linear cost of extended team time - some organizations count this as real cost, others consider it "we're paying them anyway."
+                <strong>{uxText.step1.sections.teamCost.note}</strong> {uxText.step1.sections.teamCost.description}
               </p>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Team Size (optional)
+                {uxText.step1.labels.teamSize}
               </label>
               <input 
                 type="number"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g., 25"
+                placeholder={uxText.step1.placeholders.teamSize}
                 value={formData.teamSize}
                 onChange={(e) => handleInputChange('teamSize', e.target.value)}
               />
               <p className="text-sm text-gray-500 mt-1">
-                Number of people working on this project
+                {uxText.step1.helpTexts.teamSize}
               </p>
             </div>
 
@@ -301,9 +300,9 @@ const COBLCalculator = () => {
                   className="h-5 w-5 text-blue-600"
                 />
                 <div>
-                  <div className="font-medium">Include Linear Team Costs in Analysis</div>
+                  <div className="font-medium">{uxText.step1.labels.includeTeamBurn}</div>
                   <div className="text-sm text-gray-600">
-                    Count extended team time as additional linear cost (Risk Up Front methodology)
+                    {uxText.step1.helpTexts.includeTeamBurn}
                   </div>
                 </div>
               </label>
@@ -315,7 +314,7 @@ const COBLCalculator = () => {
             disabled={!formData.industry || !formData.monthlyBusinessValue || !formData.businessValueType || !formData.productLife}
             className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
           >
-            Continue to Non-Linear Costs
+            {uxText.step1.buttons.continue}
           </button>
         </div>
       );
@@ -326,10 +325,10 @@ const COBLCalculator = () => {
         <div className="space-y-6">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Non-Linear Cost Questions
+              {uxText.step2.title}
             </h2>
             <p className="text-gray-600">
-              Risk Up Front methodology: These create step-function costs when deadlines are breached
+              {uxText.step2.subtitle}
             </p>
           </div>
 
@@ -337,29 +336,29 @@ const COBLCalculator = () => {
             {/* Customer Loss Question */}
             <div className="p-4 border border-gray-200 rounded-lg">
               <h3 className="font-medium text-gray-900 mb-3">
-                Non-Linear Cost #1: Customer Loss Impact
+                {uxText.step2.sections.customerLoss.title}
               </h3>
               <div className="space-y-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    After how many months of delay would you lose one or more key customers?
+                    {uxText.step2.labels.customerLossMonth}
                   </label>
                   <input 
                     type="number"
                     className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="e.g., 3 (leave blank if not applicable)"
+                    placeholder={uxText.step2.placeholders.customerLossMonth}
                     value={formData.customerLossMonth}
                     onChange={(e) => handleInputChange('customerLossMonth', e.target.value)}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    What would losing those customers be worth? ($)
+                    {uxText.step2.labels.customerLossValue}
                   </label>
                   <input 
                     type="number"
                     className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="e.g., 5000000"
+                    placeholder={uxText.step2.placeholders.customerLossValue}
                     value={formData.customerLossValue}
                     onChange={(e) => handleInputChange('customerLossValue', e.target.value)}
                   />
@@ -370,33 +369,32 @@ const COBLCalculator = () => {
             {/* Other Critical Cost Question */}
             <div className="p-4 border border-gray-200 rounded-lg">
               <h3 className="font-medium text-gray-900 mb-3">
-                Non-Linear Cost #2: Other Critical Impact
+                {uxText.step2.sections.otherCost.title}
               </h3>
               <div className="mb-3 text-sm text-gray-600">
-                <strong>Risk Up Front examples:</strong> contract penalties, missed funding deadlines, regulatory windows, 
-                partnership agreements, competitive market windows, manufacturing slots, valuation impacts
+                <strong>{uxText.step2.sections.otherCost.examplesTitle}</strong> {uxText.step2.sections.otherCost.examples}
               </div>
               <div className="space-y-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    At what month would this other non-linear cost hit?
+                    {uxText.step2.labels.otherCostMonth}
                   </label>
                   <input 
                     type="number"
                     className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="e.g., 6 (leave blank if not applicable)"
+                    placeholder={uxText.step2.placeholders.otherCostMonth}
                     value={formData.otherCostMonth}
                     onChange={(e) => handleInputChange('otherCostMonth', e.target.value)}
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    What would this non-linear cost be worth? ($)
+                    {uxText.step2.labels.otherCostValue}
                   </label>
                   <input 
                     type="number"
                     className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="e.g., 2000000"
+                    placeholder={uxText.step2.placeholders.otherCostValue}
                     value={formData.otherCostValue}
                     onChange={(e) => handleInputChange('otherCostValue', e.target.value)}
                   />
@@ -406,7 +404,7 @@ const COBLCalculator = () => {
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="text-sm text-blue-800">
-                <strong>Risk Up Front Linear Costs We'll Calculate:</strong> NPV of lost {formData.businessValueType === 'profit' ? 'profit' : formData.businessValueType === 'savings' ? 'cost savings' : 'business value'}{formData.includeTeamBurn && formData.teamSize && industryDefaults[formData.industry] ? `, linear team costs (~$${industryDefaults[formData.industry].costPerPerson.toLocaleString()}/person/month)` : ''}, and discount rates based on {formData.industry} industry standards
+                <strong>{uxText.step2.messages.linearCostsTitle}</strong> {uxText.step2.messages.linearCostsDescription}
               </div>
             </div>
           </div>
@@ -416,13 +414,13 @@ const COBLCalculator = () => {
               onClick={() => setStep(1)}
               className="flex-1 bg-gray-200 text-gray-800 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors"
             >
-              Back
+              {uxText.step2.buttons.back}
             </button>
             <button 
               onClick={calculateCOBL}
               className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors"
             >
-              Calculate Risk Up Front Cost of Being Late
+              {uxText.step2.buttons.calculate}
             </button>
           </div>
         </div>
@@ -438,29 +436,29 @@ const COBLCalculator = () => {
         <div className="space-y-6">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Your Risk Up Front Cost of Being Late Analysis
+              {uxText.results.summary.title}
             </h2>
             <p className="text-gray-600">
-              Based on {formatCurrency(results.params.monthlyBusinessValue)}/month {results.businessValueType === 'profit' ? 'profit' : 'cost savings'} over {results.productLife} months
+              {uxText.results.summary.subtitle.replace('{value}', formatCurrency(results.params.monthlyBusinessValue)).replace('{type}', results.businessValueType === 'profit' ? 'profit' : 'cost savings').replace('{life}', results.productLife)}
             </p>
           </div>
 
           {/* Quick Summary Cards */}
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <div className="text-sm text-yellow-700 font-medium">1 Month Late</div>
+              <div className="text-sm text-yellow-700 font-medium">{uxText.results.summary.cards.oneMonth}</div>
               <div className="text-2xl font-bold text-yellow-800">{formatCurrency(results.summary.oneMonthCost)}</div>
             </div>
             <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-              <div className="text-sm text-orange-700 font-medium">3 Months Late</div>
+              <div className="text-sm text-orange-700 font-medium">{uxText.results.summary.cards.threeMonths}</div>
               <div className="text-2xl font-bold text-orange-800">{formatCurrency(results.summary.threeMonthCost)}</div>
             </div>
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <div className="text-sm text-red-700 font-medium">6 Months Late</div>
+              <div className="text-sm text-red-700 font-medium">{uxText.results.summary.cards.sixMonths}</div>
               <div className="text-2xl font-bold text-red-800">{formatCurrency(results.summary.sixMonthCost)}</div>
             </div>
             <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-              <div className="text-sm text-purple-700 font-medium">12 Months Late</div>
+              <div className="text-sm text-purple-700 font-medium">{uxText.results.summary.cards.twelveMonths}</div>
               <div className="text-2xl font-bold text-purple-800">{formatCurrency(results.summary.twelveMonthCost)}</div>
             </div>
           </div>
@@ -468,29 +466,28 @@ const COBLCalculator = () => {
           {/* Risk Up Front Calculation Assumptions */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
             <h3 className="text-lg font-bold text-gray-900 mb-4">
-              Risk Up Front Calculation Assumptions
+              {uxText.results.summary.sections.assumptions.title}
             </h3>
             <div className="mb-4 text-sm text-blue-800">
-              <strong>Industry assumptions reflect typical business characteristics:</strong> High-growth/high-risk industries use higher discount rates. 
-              Complex products require longer ramp periods. Specialized talent commands higher costs.
+              <strong>{uxText.results.summary.sections.assumptions.note}</strong> {uxText.results.summary.sections.assumptions.description}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div>
-                <div className="font-medium text-gray-900">Industry: {formData.industry}</div>
+                <div className="font-medium text-gray-900">{uxText.results.summary.sections.assumptions.industryTitle}: {formData.industry}</div>
                 <ul className="mt-2 space-y-1 text-gray-700">
-                  <li>• Discount rate: {results.discountRate}% annually</li>
-                  <li>• {results.businessValueType === 'profit' ? 'Revenue ramp period' : 'Deployment period'}: {results.rampMonths} months</li>
-                  {results.params.includeTeamBurn && <li>• Team cost: {formatCurrency(industryDefaults[formData.industry]?.costPerPerson || 12000)}/person/month</li>}
+                  <li>• {uxText.results.summary.sections.assumptions.discountRate}: {results.discountRate}% {uxText.results.summary.sections.assumptions.annually}</li>
+                  <li>• {results.businessValueType === 'profit' ? uxText.results.summary.sections.assumptions.revenueRamp : uxText.results.summary.sections.assumptions.deploymentPeriod}: {results.rampMonths} {uxText.results.summary.sections.assumptions.months}</li>
+                  {results.params.includeTeamBurn && <li>• {uxText.results.summary.sections.assumptions.teamCost}: {formatCurrency(industryDefaults[formData.industry]?.costPerPerson || 12000)}/{uxText.results.summary.sections.assumptions.personMonth}</li>}
                 </ul>
               </div>
               <div>
-                <div className="font-medium text-gray-900">Your Project Parameters</div>
+                <div className="font-medium text-gray-900">{uxText.results.summary.sections.assumptions.projectTitle}</div>
                 <ul className="mt-2 space-y-1 text-gray-700">
-                  <li>• Monthly {results.businessValueType === 'profit' ? 'profit' : 'cost savings'}: {formatCurrency(results.params.monthlyBusinessValue)}</li>
-                  <li>• Product lifetime: {results.productLife} months</li>
-                  {results.params.includeTeamBurn && <li>• Team size: {parseInt(formData.teamSize)} people</li>}
-                  {results.params.customerLossMonth > 0 && <li>• Customer loss risk: Month {results.params.customerLossMonth} ({formatCurrency(results.params.customerLossValue)})</li>}
-                  {results.params.otherCostMonth > 0 && <li>• Other critical cost: Month {results.params.otherCostMonth} ({formatCurrency(results.params.otherCostValue)})</li>}
+                  <li>• {uxText.results.summary.sections.assumptions.monthlyValue}: {formatCurrency(results.params.monthlyBusinessValue)}</li>
+                  <li>• {uxText.results.summary.sections.assumptions.productLifetime}: {results.productLife} {uxText.results.summary.sections.assumptions.months}</li>
+                  {results.params.includeTeamBurn && <li>• {uxText.results.summary.sections.assumptions.teamSize}: {parseInt(formData.teamSize)} {uxText.results.summary.sections.assumptions.people}</li>}
+                  {results.params.customerLossMonth > 0 && <li>• {uxText.results.summary.sections.assumptions.customerLoss}: {uxText.results.summary.sections.assumptions.month} {results.params.customerLossMonth} ({formatCurrency(results.params.customerLossValue)})</li>}
+                  {results.params.otherCostMonth > 0 && <li>• {uxText.results.summary.sections.assumptions.otherCriticalCost}: {uxText.results.summary.sections.assumptions.month} {results.params.otherCostMonth} ({formatCurrency(results.params.otherCostValue)})</li>}
                 </ul>
               </div>
             </div>
@@ -502,50 +499,50 @@ const COBLCalculator = () => {
               onClick={() => setViewMode('summary')}
               className={`px-4 py-2 rounded-lg font-medium ${viewMode === 'summary' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
             >
-              Summary
+              {uxText.results.summary.buttons.summary}
             </button>
             <button 
               onClick={() => setViewMode('table')}
               className={`px-4 py-2 rounded-lg font-medium ${viewMode === 'table' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
             >
               <Table className="h-4 w-4 inline mr-1" />
-              Table
+              {uxText.results.summary.buttons.table}
             </button>
             <button 
               onClick={() => setViewMode('graph')}
               className={`px-4 py-2 rounded-lg font-medium ${viewMode === 'graph' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
             >
               <BarChart className="h-4 w-4 inline mr-1" />
-              Graph
+              {uxText.results.summary.buttons.graph}
             </button>
           </div>
 
           {/* Key Insights */}
           <div className="bg-green-50 border border-green-200 rounded-lg p-6">
             <h3 className="text-lg font-bold text-gray-900 mb-4">
-              Risk Up Front Key Insights
+              {uxText.results.summary.sections.insights.title}
             </h3>
             <ul className="space-y-2 text-sm">
               <li className="flex items-start space-x-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full mt-1.5"></div>
-                <span><strong>Linear cost per month:</strong> Approximately {formatCurrency(results.monthlyData[1]?.monthlyCost || 0)}</span>
+                <span><strong>{uxText.results.summary.sections.insights.linearCostPerMonth}:</strong> {uxText.results.summary.sections.insights.approximately} {formatCurrency(results.monthlyData[1]?.monthlyCost || 0)}</span>
               </li>
               <li className="flex items-start space-x-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full mt-1.5"></div>
-                <span><strong>Non-linear costs:</strong> {
+                <span><strong>{uxText.results.summary.sections.insights.nonLinearCosts}:</strong> {
                   (() => {
                     const firstNonLinear = results.monthlyData.find(d => d.nonLinearCosts > 0);
                     if (firstNonLinear) {
-                      return `Activate after ${firstNonLinear.month} months (step-function impact)`;
+                      return `${uxText.results.summary.sections.insights.activateAfter} ${firstNonLinear.month} ${uxText.results.summary.sections.insights.months} (${uxText.results.summary.sections.insights.stepFunctionImpact})`;
                     } else {
-                      return 'None identified in this analysis';
+                      return uxText.results.summary.sections.insights.noneIdentified;
                     }
                   })()
                 }</span>
               </li>
               <li className="flex items-start space-x-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full mt-1.5"></div>
-                <span><strong>Total {results.businessValueType === 'profit' ? 'profit' : 'savings'} NPV at risk:</strong> {formatCurrency(results.onTimeNPV)}</span>
+                <span><strong>{uxText.results.summary.sections.insights.totalValueAtRisk}:</strong> {formatCurrency(results.onTimeNPV)}</span>
               </li>
             </ul>
           </div>
@@ -558,13 +555,13 @@ const COBLCalculator = () => {
         <div className="space-y-6">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Risk Up Front Cost Analysis by Month
+              {uxText.results.table.title}
             </h2>
             <button 
               onClick={() => setViewMode('summary')}
               className="text-blue-600 hover:underline"
             >
-              ← Back to Summary
+              {uxText.results.table.backToSummary}
             </button>
           </div>
 
@@ -572,12 +569,12 @@ const COBLCalculator = () => {
             <table className="w-full border-collapse border border-gray-300 text-sm">
               <thead>
                 <tr className="bg-gray-50">
-                  <th className="border border-gray-300 p-2 text-left">Months Late</th>
-                  <th className="border border-gray-300 p-2 text-right">Lost {results.businessValueType === 'profit' ? 'Profit' : 'Savings'} NPV</th>
-                  {results.params.includeTeamBurn && <th className="border border-gray-300 p-2 text-right">Linear Team Costs</th>}
-                  <th className="border border-gray-300 p-2 text-right">Linear Cost Subtotal</th>
-                  <th className="border border-gray-300 p-2 text-right">Non-Linear Costs</th>
-                  <th className="border border-gray-300 p-2 text-right font-bold">Total Cost</th>
+                  <th className="border border-gray-300 p-2 text-left">{uxText.results.table.headers.monthsLate}</th>
+                  <th className="border border-gray-300 p-2 text-right">{uxText.results.table.headers.lostBusinessValue}</th>
+                  {results.params.includeTeamBurn && <th className="border border-gray-300 p-2 text-right">{uxText.results.table.headers.linearTeamCosts}</th>}
+                  <th className="border border-gray-300 p-2 text-right">{uxText.results.table.headers.linearCostSubtotal}</th>
+                  <th className="border border-gray-300 p-2 text-right">{uxText.results.table.headers.nonLinearCosts}</th>
+                  <th className="border border-gray-300 p-2 text-right font-bold">{uxText.results.table.headers.totalCost}</th>
                 </tr>
               </thead>
               <tbody>
@@ -606,13 +603,13 @@ const COBLCalculator = () => {
         <div className="space-y-6">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Risk Up Front Cost of Being Late Over Time
+              {uxText.results.graph.title}
             </h2>
             <button 
               onClick={() => setViewMode('summary')}
               className="text-blue-600 hover:underline"
             >
-              ← Back to Summary
+              {uxText.results.graph.backToSummary}
             </button>
           </div>
 
@@ -658,7 +655,7 @@ const COBLCalculator = () => {
                         
                         {/* Month label */}
                         <div className="text-xs text-gray-700 mt-2 font-medium">
-                          {i === 0 ? 'On Time' : `${data.month}m`}
+                          {i === 0 ? uxText.results.graph.labels.onTime : `${data.month}m`}
                         </div>
                       </div>
                     );
@@ -667,7 +664,7 @@ const COBLCalculator = () => {
                 
                 {/* X-axis label */}
                 <div className="text-center text-sm text-gray-600 mt-4">
-                  Months of Delay
+                  {uxText.results.graph.labels.monthsOfDelay}
                 </div>
               </div>
             </div>
@@ -677,43 +674,43 @@ const COBLCalculator = () => {
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="flex items-center space-x-2">
               <div className="w-4 h-4 bg-green-500 rounded"></div>
-              <span>On Time (No Cost)</span>
+              <span>{uxText.results.graph.legend.onTime}</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-              <span>1-3 Months Late</span>
+              <span>{uxText.results.graph.legend.oneToThreeMonths}</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-4 h-4 bg-orange-500 rounded"></div>
-              <span>4-6 Months Late</span>
+              <span>{uxText.results.graph.legend.fourToSixMonths}</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-4 h-4 bg-red-500 rounded"></div>
-              <span>7+ Months Late</span>
+              <span>{uxText.results.graph.legend.sevenPlusMonths}</span>
             </div>
           </div>
 
           {/* Key Insights */}
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2">Risk Up Front Chart Insights:</h4>
+            <h4 className="font-medium text-gray-900 mb-2">{uxText.results.graph.sections.insights.title}</h4>
             <ul className="text-sm text-gray-700 space-y-1">
-              <li>• <strong>Non-linear costs:</strong> {
+              <li>• <strong>{uxText.results.graph.sections.insights.nonLinearCosts}:</strong> {
                 (() => {
                   const customerMonth = results.params.customerLossMonth;
                   const otherMonth = results.params.otherCostMonth;
                   if (customerMonth > 0 && otherMonth > 0) {
-                    return `Create dramatic step-function jumps at months ${customerMonth} and ${otherMonth}`;
+                    return `${uxText.results.graph.sections.insights.createJumps} ${customerMonth} ${uxText.results.graph.sections.insights.and} ${otherMonth}`;
                   } else if (customerMonth > 0) {
-                    return `Create dramatic step-function jump at month ${customerMonth}`;
+                    return `${uxText.results.graph.sections.insights.createJump} ${customerMonth}`;
                   } else if (otherMonth > 0) {
-                    return `Create dramatic step-function jump at month ${otherMonth}`;
+                    return `${uxText.results.graph.sections.insights.createJump} ${otherMonth}`;
                   } else {
-                    return 'None identified - only linear costs apply';
+                    return uxText.results.graph.sections.insights.noneApplied;
                   }
                 })()
               }</li>
-              {results.params.includeTeamBurn && <li>• <strong>Linear team costs:</strong> {formatCurrency(results.params.teamBurnRate)}/month</li>}
-              <li>• <strong>Linear {results.businessValueType === 'profit' ? 'profit' : 'savings'} NPV loss</strong> accelerates with longer delays due to {results.discountRate}% discount rate</li>
+              {results.params.includeTeamBurn && <li>• <strong>{uxText.results.graph.sections.insights.linearTeamCosts}:</strong> {formatCurrency(results.params.teamBurnRate)}/{uxText.results.graph.sections.insights.perMonth}</li>}
+              <li>• <strong>{uxText.results.graph.sections.insights.linearValueLoss}</strong> {uxText.results.graph.sections.insights.acceleratesWithDelays} {results.discountRate}% {uxText.results.graph.sections.insights.discountRate}</li>
             </ul>
           </div>
         </div>
@@ -747,14 +744,14 @@ const COBLCalculator = () => {
           <div className="flex items-center justify-center space-x-2 mb-4">
             <Calculator className="h-8 w-8 text-blue-600" />
             <h1 className="text-3xl font-bold text-gray-900">
-              Risk Up Front
+              {uxText.header.title}
             </h1>
           </div>
           <h2 className="text-xl text-gray-600 mb-2">
-            Cost of Being Late Calculator
+            {uxText.header.subtitle}
           </h2>
           <p className="text-sm text-gray-500">
-            Powered by Celerity Consulting Group methodology
+            {uxText.header.poweredBy}
           </p>
         </div>
 
@@ -763,10 +760,10 @@ const COBLCalculator = () => {
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Calculating Your Risk Up Front Cost of Being Late
+              {uxText.loading.title}
             </h3>
             <p className="text-gray-600">
-              Analyzing linear and non-linear cost impact across {formData.productLife || formData.productLife || 36} month project lifecycle...
+              {uxText.loading.description.replace('{life}', formData.productLife || formData.productLife || 36)}
             </p>
           </div>
         )}
@@ -779,17 +776,17 @@ const COBLCalculator = () => {
             {results && (
               <div className="mt-8 space-y-4">
                 <button className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors">
-                  Download Full Risk Up Front Cost of Being Late Report
+                  {uxText.results.buttons.downloadReport}
                 </button>
                 <div className="flex space-x-4">
                   <button className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 transition-colors">
-                    Schedule Risk Up Front Assessment
+                    {uxText.results.buttons.scheduleAssessment}
                   </button>
                   <button 
                     onClick={resetCalculator}
                     className="flex-1 bg-gray-200 text-gray-800 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors"
                   >
-                    New Calculation
+                    {uxText.results.buttons.newCalculation}
                   </button>
                 </div>
               </div>
@@ -799,7 +796,7 @@ const COBLCalculator = () => {
 
         {/* Footer */}
         <div className="text-center mt-8 text-sm text-gray-500">
-          <p>© 2025 Celerity Consulting Group Inc. Risk Up Front® is a registered trademark.</p>
+          <p>{uxText.footer.text}</p>
         </div>
       </div>
     </div>

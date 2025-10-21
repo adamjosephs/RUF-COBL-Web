@@ -1,0 +1,191 @@
+{
+  "header": {
+    "title": "Risk Up Front",
+    "subtitle": "Cost of Being Late Calculator",
+    "poweredBy": "Powered by Celerity Consulting Group methodology"
+  },
+  "step1": {
+    "title": "Risk Up Front Quick Assessment",
+    "subtitle": "Calculate linear and non-linear costs in under 60 seconds",
+    "labels": {
+      "industry": "Industry",
+      "monthlyBusinessValue": "Monthly Business Value",
+      "businessValueType": "What type of value does this project deliver each month?",
+      "monthlyProfit": "Monthly profit at full scale ($)",
+      "monthlySavings": "Monthly cost savings when deployed ($)",
+      "monthlyBusinessValue": "Monthly business value ($)",
+      "productLife": "Product Lifetime (months)",
+      "teamSize": "Team Size (optional)",
+      "includeTeamBurn": "Include Linear Team Costs in Analysis"
+    },
+    "placeholders": {
+      "industry": "Select your industry",
+      "businessValueType": "Select value type",
+      "monthlyBusinessValue": "e.g., 500000",
+      "productLife": "e.g., 36",
+      "teamSize": "e.g., 25"
+    },
+    "options": {
+      "profit": "Lost Profit (revenue-generating project)",
+      "savings": "Lost Savings (cost-reduction project)"
+    },
+    "helpTexts": {
+      "profit": "Profit per month once your product reaches steady state (profit = revenue minus costs)",
+      "savings": "How much you save in operating costs each month when this is deployed",
+      "businessValue": "The business value you lose each month by being late",
+      "productLife": "How long will this project deliver value?",
+      "teamSize": "Number of people working on this project",
+      "includeTeamBurn": "Count extended team time as additional linear cost (Risk Up Front methodology)"
+    },
+    "messages": {
+      "important": "Important:",
+      "businessValueNote": "For revenue-generating projects, we need profit (revenue minus costs), not just revenue. This gives us the actual business value at risk when you're late."
+    },
+    "sections": {
+      "teamCost": {
+        "title": "Team Cost Analysis (Risk Up Front Methodology)",
+        "note": "If you'd like to calculate the additional cost of funding the team longer than planned, complete these fields. Otherwise, leave them blank.",
+        "description": "This represents the linear cost of extended team time - some organizations count this as real cost, others consider it \"we're paying them anyway.\""
+      }
+    },
+    "buttons": {
+      "continue": "Continue to Non-Linear Costs"
+    }
+  },
+  "step2": {
+    "title": "Non-Linear Cost Questions",
+    "subtitle": "Risk Up Front methodology: These create step-function costs when deadlines are breached",
+    "labels": {
+      "customerLossMonth": "After how many months of delay would you lose one or more key customers?",
+      "customerLossValue": "What would losing those customers be worth? ($)",
+      "otherCostMonth": "At what month would this other non-linear cost hit?",
+      "otherCostValue": "What would this non-linear cost be worth? ($)"
+    },
+    "placeholders": {
+      "customerLossMonth": "e.g., 3 (leave blank if not applicable)",
+      "customerLossValue": "e.g., 5000000",
+      "otherCostMonth": "e.g., 6 (leave blank if not applicable)",
+      "otherCostValue": "e.g., 2000000"
+    },
+    "sections": {
+      "customerLoss": {
+        "title": "Non-Linear Cost #1: Customer Loss Impact"
+      },
+      "otherCost": {
+        "title": "Non-Linear Cost #2: Other Critical Impact",
+        "examplesTitle": "Risk Up Front examples:",
+        "examples": "contract penalties, missed funding deadlines, regulatory windows, partnership agreements, competitive market windows, manufacturing slots, valuation impacts"
+      }
+    },
+    "messages": {
+      "linearCostsTitle": "Risk Up Front Linear Costs We'll Calculate:",
+      "linearCostsDescription": "NPV of lost {type}, linear team costs (~${cost}/person/month), and discount rates based on {industry} industry standards"
+    },
+    "buttons": {
+      "back": "Back",
+      "calculate": "Calculate Risk Up Front Cost of Being Late"
+    }
+  },
+  "results": {
+    "summary": {
+      "title": "Your Risk Up Front Cost of Being Late Analysis",
+      "subtitle": "Based on {value}/month {type} over {life} months",
+      "cards": {
+        "oneMonth": "1 Month Late",
+        "threeMonths": "3 Months Late",
+        "sixMonths": "6 Months Late",
+        "twelveMonths": "12 Months Late"
+      },
+      "sections": {
+        "assumptions": {
+          "title": "Risk Up Front Calculation Assumptions",
+          "note": "Industry assumptions reflect typical business characteristics:",
+          "description": "High-growth/high-risk industries use higher discount rates. Complex products require longer ramp periods. Specialized talent commands higher costs.",
+          "industryTitle": "Industry",
+          "discountRate": "Discount rate",
+          "annually": "annually",
+          "revenueRamp": "Revenue ramp period",
+          "deploymentPeriod": "Deployment period",
+          "months": "months",
+          "teamCost": "Team cost",
+          "personMonth": "person/month",
+          "projectTitle": "Your Project Parameters",
+          "monthlyValue": "Monthly {type}",
+          "productLifetime": "Product lifetime",
+          "teamSize": "Team size",
+          "people": "people",
+          "customerLoss": "Customer loss risk",
+          "month": "Month",
+          "otherCriticalCost": "Other critical cost"
+        },
+        "insights": {
+          "title": "Risk Up Front Key Insights",
+          "linearCostPerMonth": "Linear cost per month",
+          "approximately": "Approximately",
+          "nonLinearCosts": "Non-linear costs",
+          "activateAfter": "Activate after",
+          "months": "months",
+          "stepFunctionImpact": "step-function impact",
+          "noneIdentified": "None identified in this analysis",
+          "totalValueAtRisk": "Total {type} NPV at risk"
+        }
+      },
+      "buttons": {
+        "summary": "Summary",
+        "table": "Table",
+        "graph": "Graph"
+      }
+    },
+    "table": {
+      "title": "Risk Up Front Cost Analysis by Month",
+      "backToSummary": "← Back to Summary",
+      "headers": {
+        "monthsLate": "Months Late",
+        "lostBusinessValue": "Lost {type} NPV",
+        "linearTeamCosts": "Linear Team Costs",
+        "linearCostSubtotal": "Linear Cost Subtotal",
+        "nonLinearCosts": "Non-Linear Costs",
+        "totalCost": "Total Cost"
+      }
+    },
+    "graph": {
+      "title": "Risk Up Front Cost of Being Late Over Time",
+      "backToSummary": "← Back to Summary",
+      "labels": {
+        "onTime": "On Time",
+        "monthsOfDelay": "Months of Delay"
+      },
+      "legend": {
+        "onTime": "On Time (No Cost)",
+        "oneToThreeMonths": "1-3 Months Late",
+        "fourToSixMonths": "4-6 Months Late",
+        "sevenPlusMonths": "7+ Months Late"
+      },
+      "sections": {
+        "insights": {
+          "title": "Risk Up Front Chart Insights:",
+          "nonLinearCosts": "Non-linear costs",
+          "createJumps": "Create dramatic step-function jumps at months",
+          "and": "and",
+          "createJump": "Create dramatic step-function jump at month",
+          "noneApplied": "None identified - only linear costs apply",
+          "linearTeamCosts": "Linear team costs",
+          "perMonth": "month",
+          "linearValueLoss": "Linear {type} NPV loss",
+          "acceleratesWithDelays": "accelerates with longer delays due to",
+          "discountRate": "discount rate"
+        }
+      }
+    },
+    "buttons": {
+      "downloadReport": "Download Full Risk Up Front Cost of Being Late Report",
+      "scheduleAssessment": "Schedule Risk Up Front Assessment",
+      "newCalculation": "New Calculation"
+    }
+  },
+  "loading": {
+    "title": "Calculating Your Risk Up Front Cost of Being Late",
+    "description": "Analyzing linear and non-linear cost impact across {life} month project lifecycle..."
+  },
+  "footer": {
+    "text": "© 2025
