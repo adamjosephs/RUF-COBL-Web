@@ -629,29 +629,7 @@ const COBLCalculator = () => {
             </div>
           </div>
 
-          {/* View Toggle */}
-          <div className="flex space-x-2 justify-center">
-            <button 
-              onClick={() => setViewMode('summary')}
-              className={`px-4 py-2 rounded-lg font-medium ${viewMode === 'summary' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
-            >
-              {uxText.results.summary.buttons.summary}
-            </button>
-            <button 
-              onClick={() => setViewMode('table')}
-              className={`px-4 py-2 rounded-lg font-medium ${viewMode === 'table' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
-            >
-              <Table className="h-4 w-4 inline mr-1" />
-              {uxText.results.summary.buttons.table}
-            </button>
-            <button 
-              onClick={() => setViewMode('graph')}
-              className={`px-4 py-2 rounded-lg font-medium ${viewMode === 'graph' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'}`}
-            >
-              <BarChart className="h-4 w-4 inline mr-1" />
-              {uxText.results.summary.buttons.graph}
-            </button>
-          </div>
+          {/* Removed view toggle buttons from summary to make graph automatic */}
         </div>
       );
     }
@@ -843,23 +821,22 @@ const COBLCalculator = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4">
-       {/* Header */}
-<div className="text-center mb-8">
-  <div className="flex items-center justify-center space-x-2 mb-4">
-    {/* Add logo image for branding */}
-    <img src="/logo.png" alt="Celerity Consulting Group Logo" className="h-8 w-8" />
-    <h1 className="text-3xl font-bold text-gray-900">
-      {uxText.header.title}
-    </h1>
-  </div>
-  <h2 className="text-xl text-gray-600 mb-2">
-    {uxText.header.subtitle}
-  </h2>
-  <p className="text-sm text-gray-500">
-    {uxText.header.poweredBy}
-  </p>
-</div>
-
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center space-x-2 mb-4">
+            {/* Add logo image for branding */}
+            <img src="/logo.png" alt="Celerity Consulting Group Logo" className="h-8 w-8" />
+            <h1 className="text-3xl font-bold text-gray-900">
+              {uxText.header.title}
+            </h1>
+          </div>
+          <h2 className="text-xl text-gray-600 mb-2">
+            {uxText.header.subtitle}
+          </h2>
+          <p className="text-sm text-gray-500">
+            {uxText.header.poweredBy}
+          </p>
+        </div>
 
         {/* Loading State */}
         {isCalculating && (
