@@ -10,7 +10,7 @@
     "labels": {
       "industry": "Industry",
       "monthlyBusinessValue": "Monthly Business Value",
-      "businessValueType": "What type of value does this project deliver each month?",
+      "businessValueType": "What is the monthly Net Profit or Savings each month?",
       "monthlyProfit": "Monthly profit at full scale ($)",
       "monthlySavings": "Monthly cost savings when deployed ($)",
       "monthlyBusinessValue": "Monthly business value ($)",
@@ -53,7 +53,7 @@
     }
   },
   "step2": {
-    "title": "Non-Linear Cost Questions",
+    "title": "Non-Linear Cost Questions (optional)",
     "subtitle": "Risk Up Front methodology: These create step-function costs when deadlines are breached",
     "labels": {
       "customerLossMonth": "After how many months of delay would you lose one or more key customers?",
@@ -88,7 +88,7 @@
   },
   "results": {
     "summary": {
-      "title": "Your Risk Up Front Cost of Being Late Analysis",
+      "title": "Your Risk Up Front Cummulative Cost of Being Late Analysis",
       "subtitle": "Based on {value}/month {type} over {life} months",
       "cards": {
         "oneMonth": "1 Month Late",
