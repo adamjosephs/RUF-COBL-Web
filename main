@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { DollarSign, AlertTriangle, TrendingUp, Clock, Users, Calculator, BarChart, Table } from 'lucide-react';
-import uxText from './uxText.json'; // Import the JSON file containing all UX text
+import { DollarSign, AlertTriangle, TrendingUp, Clock, Users, Calculator, BarChart, Table, Mail, Calendar } from 'lucide-react';
+import uxText from './uxText.json';
 
 const COBLCalculator = () => {
-  const [step, setStep] = useState(0); // Start at 0 for homepage
+  const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({
+    email: '',
     industry: '',
     teamSize: '',
     monthlyBusinessValue: '',
-    businessValueType: '', // 'profit' or 'savings'
+    businessValueType: '',
     includeTeamBurn: true,
     productLife: '',
     customerLossMonth: '',
@@ -18,7 +19,6 @@ const COBLCalculator = () => {
   });
   const [results, setResults] = useState(null);
   const [isCalculating, setIsCalculating] = useState(false);
-  const [viewMode, setViewMode] = useState('summary'); // 'summary', 'table', 'graph'
 
   const industries = [
     'Biotech/Pharmaceutical', 'Financial Technology', 'Software/SaaS', 
@@ -56,7 +56,6 @@ const COBLCalculator = () => {
       const otherCostMonth = parseInt(formData.otherCostMonth) || 0;
       const otherCostValue = parseInt(formData.otherCostValue) || 0;
       
-      // Use industry defaults
       const defaults = industryDefaults[formData.industry] || industryDefaults['Other'];
       const discountRate = defaults.discountRate;
       const rampMonths = defaults.rampMonths;
@@ -93,18 +92,16 @@ const COBLCalculator = () => {
     
     const monthlyDiscountRate = discountRate / 100 / 12;
     
-    // Calculate NPV for different delay scenarios
     const calculateNPV = (delayMonths) => {
       let npv = 0;
       for (let month = 1; month <= productLife; month++) {
         const effectiveMonth = month + delayMonths;
         
-        // For profit projects, apply ramp period; for savings projects, immediate value
         let value;
         if (businessValueType === 'profit') {
           value = month <= rampMonths ? (monthlyBusinessValue * (month / rampMonths)) : monthlyBusinessValue;
         } else {
-          value = monthlyBusinessValue; // Savings start immediately when deployed
+          value = monthlyBusinessValue;
         }
         
         const discountFactor = Math.pow(1 + monthlyDiscountRate, -effectiveMonth);
@@ -116,7 +113,6 @@ const COBLCalculator = () => {
     const onTimeNPV = calculateNPV(0);
     const monthlyData = [];
     
-    // Calculate cost for each month of delay (0 to 12 months)
     for (let delayMonths = 0; delayMonths <= 12; delayMonths++) {
       const delayedNPV = calculateNPV(delayMonths);
       const lostBusinessValue = onTimeNPV - delayedNPV;
@@ -124,7 +120,6 @@ const COBLCalculator = () => {
       
       const linearCosts = lostBusinessValue + additionalBurn;
       
-      // Simple non-linear costs based on user input
       let nonLinearCosts = 0;
       if (delayMonths >= customerLossMonth && customerLossMonth > 0) {
         nonLinearCosts += customerLossValue;
@@ -172,256 +167,362 @@ const COBLCalculator = () => {
     }).format(amount);
   };
 
-  const renderSimpleForm = () => {
-    if (step === 1) {
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              {uxText.step1.title}
-            </h2>
-            <p className="text-gray-600">
-              {uxText.step1.subtitle}
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {uxText.step1.labels.industry}
-              </label>
-              <select 
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                value={formData.industry}
-                onChange={(e) => handleInputChange('industry', e.target.value)}
-              >
-                <option value="">{uxText.step1.placeholders.industry}</option>
-                {industries.map(industry => (
-                  <option key={industry} value={industry}>{industry}</option>
-                ))}
-              </select>
+  const renderHomePage = () => {
+    return (
+      <div className="min-h-screen bg-white">
+        {/* Header with Logo */}
+        <div className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <img src="/logo.png" alt="Risk Up Front" className="h-24 w-auto" />
+              </div>
+              <div className="flex items-center space-x-4">
+                <AlertTriangle className="h-6 w-6 text-red-600" />
+                <h1 className="text-2xl font-bold text-gray-900">Cost of Being Late Calculator</h1>
+              </div>
             </div>
+          </div>
+        </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {uxText.step1.labels.monthlyBusinessValue}
-              </label>
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
-                <p className="text-sm text-yellow-800">
-                  <strong>{uxText.step1.messages.important}</strong> {uxText.step1.messages.businessValueNote}
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Left Column - Info */}
+            <div className="space-y-6">
+              <div className="bg-red-50 border-l-4 border-red-600 p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Why This Analysis Matters</h2>
+                <p className="text-gray-700 mb-4">
+                  Late changes destroy project value. Most teams track obvious costs but miss monthly business value erosion plus sudden threshold losses.
+                </p>
+                <div className="space-y-3">
+                  <div className="flex items-start space-x-2">
+                    <div className="w-2 h-2 bg-red-600 rounded-full mt-2"></div>
+                    <p className="text-gray-700">Monthly profit/savings at steady state</p>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <div className="w-2 h-2 bg-red-600 rounded-full mt-2"></div>
+                    <p className="text-gray-700">Critical deadlines that trigger major losses</p>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <div className="w-2 h-2 bg-red-600 rounded-full mt-2"></div>
+                    <p className="text-gray-700">Extended team funding (if counted as real cost)</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 border-l-4 border-blue-600 p-6">
+                <h3 className="font-bold text-gray-900 mb-3">Key Inputs:</h3>
+                <ul className="space-y-2 text-gray-700">
+                  <li>• Monthly profit/savings at steady state</li>
+                  <li>• Critical deadlines that trigger major losses</li>
+                  <li>• Extended team funding (if counted as real cost)</li>
+                </ul>
+                <p className="mt-4 text-sm text-gray-600">
+                  Projects still need ramp time when late - you lose peak value while market windows close.
                 </p>
               </div>
-              <div className="space-y-3">
+            </div>
+
+            {/* Right Column - Form */}
+            <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Risk Up Front Quick Assessment
+              </h2>
+              <p className="text-gray-600 mb-6">
+                Calculate linear and non-linear costs in under 60 seconds
+              </p>
+
+              {/* Email Collection Notice */}
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                <div className="flex items-start space-x-3">
+                  <Mail className="h-5 w-5 text-yellow-600 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-yellow-800">
+                      <strong>We'll email you the results.</strong> Enter your email below to receive a detailed PDF report of your Risk Up Front analysis. You'll also see results immediately on the next page.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {/* Email Field */}
                 <div>
-                  <label className="block text-sm text-gray-600 mb-2">
-                    {uxText.step1.labels.businessValueType}
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email Address *
+                  </label>
+                  <input 
+                    type="email"
+                    required
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    placeholder="your.email@company.com"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Required to receive your detailed analysis report
+                  </p>
+                </div>
+
+                {/* Industry */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Industry
                   </label>
                   <select 
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    value={formData.industry}
+                    onChange={(e) => handleInputChange('industry', e.target.value)}
+                  >
+                    <option value="">Select your industry</option>
+                    {industries.map(industry => (
+                      <option key={industry} value={industry}>{industry}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Business Value Type */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Monthly Business Value
+                  </label>
+                  <p className="text-sm text-gray-600 mb-2">
+                    What type of value does this project deliver each month?
+                  </p>
+                  <select 
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent mb-3"
                     value={formData.businessValueType}
                     onChange={(e) => handleInputChange('businessValueType', e.target.value)}
                   >
-                    <option value="">{uxText.step1.placeholders.businessValueType}</option>
-                    <option value="profit">{uxText.step1.options.profit}</option>
-                    <option value="savings">{uxText.step1.options.savings}</option>
+                    <option value="">Select value type</option>
+                    <option value="profit">Lost Profit (revenue-generating project)</option>
+                    <option value="savings">Lost Savings (cost-reduction project)</option>
                   </select>
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-600 mb-2">
-                    {formData.businessValueType === 'profit' ? 
-                      uxText.step1.labels.monthlyProfit : 
-                      formData.businessValueType === 'savings' ?
-                      uxText.step1.labels.monthlySavings :
-                      uxText.step1.labels.monthlyBusinessValue}
-                  </label>
-                  <input 
-                    type="number"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder={uxText.step1.placeholders.monthlyBusinessValue}
-                    value={formData.monthlyBusinessValue}
-                    onChange={(e) => handleInputChange('monthlyBusinessValue', e.target.value)}
-                  />
-                  <p className="text-sm text-gray-500 mt-1">
-                    {formData.businessValueType === 'profit' ? 
-                      uxText.step1.helpTexts.profit : 
-                      formData.businessValueType === 'savings' ?
-                      uxText.step1.helpTexts.savings :
-                      uxText.step1.helpTexts.businessValue}
+                  
+                  {formData.businessValueType && (
+                    <input 
+                      type="number"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      placeholder="e.g., 500000"
+                      value={formData.monthlyBusinessValue}
+                      onChange={(e) => handleInputChange('monthlyBusinessValue', e.target.value)}
+                    />
+                  )}
+                  <p className="text-xs text-gray-500 mt-1">
+                    The business value you lose each month by being late
                   </p>
                 </div>
+
+                {/* Product Lifetime */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Product Lifetime (months)
+                  </label>
+                  <input 
+                    type="number"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    placeholder="e.g., 36"
+                    value={formData.productLife}
+                    onChange={(e) => handleInputChange('productLife', e.target.value)}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    How long will this project deliver value?
+                  </p>
+                </div>
+
+                {/* Team Size */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Team Size (optional)
+                  </label>
+                  <input 
+                    type="number"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    placeholder="e.g., 25"
+                    value={formData.teamSize}
+                    onChange={(e) => handleInputChange('teamSize', e.target.value)}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Number of people working on this project
+                  </p>
+                </div>
+
+                {/* Include Team Burn */}
+                <div className="p-4 border border-gray-200 rounded-lg">
+                  <label className="flex items-center space-x-3">
+                    <input 
+                      type="checkbox"
+                      checked={formData.includeTeamBurn}
+                      onChange={(e) => handleInputChange('includeTeamBurn', e.target.checked)}
+                      className="h-5 w-5 text-red-600"
+                    />
+                    <div>
+                      <div className="font-medium">Include Linear Team Costs in Analysis</div>
+                      <div className="text-sm text-gray-600">
+                        Count extended team time as additional linear cost (Risk Up Front methodology)
+                      </div>
+                    </div>
+                  </label>
+                </div>
+
+                <button 
+                  onClick={() => setStep(2)}
+                  disabled={!formData.email || !formData.industry || !formData.monthlyBusinessValue || !formData.businessValueType || !formData.productLife}
+                  className="w-full bg-red-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                >
+                  Continue to Non-Linear Costs
+                </button>
               </div>
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {uxText.step1.labels.productLife}
-              </label>
-              <input 
-                type="number"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={uxText.step1.placeholders.productLife}
-                value={formData.productLife}
-                onChange={(e) => handleInputChange('productLife', e.target.value)}
-              />
-              <p className="text-sm text-gray-500 mt-1">
-                {uxText.step1.helpTexts.productLife}
-              </p>
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-              <h3 className="font-medium text-blue-900 mb-2">{uxText.step1.sections.teamCost.title}</h3>
-              <p className="text-sm text-blue-800">
-                <strong>{uxText.step1.sections.teamCost.note}</strong> {uxText.step1.sections.teamCost.description}
-              </p>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {uxText.step1.labels.teamSize}
-              </label>
-              <input 
-                type="number"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={uxText.step1.placeholders.teamSize}
-                value={formData.teamSize}
-                onChange={(e) => handleInputChange('teamSize', e.target.value)}
-              />
-              <p className="text-sm text-gray-500 mt-1">
-                {uxText.step1.helpTexts.teamSize}
-              </p>
-            </div>
-
-            <div className="p-4 border border-gray-200 rounded-lg">
-              <label className="flex items-center space-x-3">
-                <input 
-                  type="checkbox"
-                  checked={formData.includeTeamBurn}
-                  onChange={(e) => handleInputChange('includeTeamBurn', e.target.checked)}
-                  className="h-5 w-5 text-blue-600"
-                />
-                <div>
-                  <div className="font-medium">{uxText.step1.labels.includeTeamBurn}</div>
-                  <div className="text-sm text-gray-600">
-                    {uxText.step1.helpTexts.includeTeamBurn}
-                  </div>
-                </div>
-              </label>
-            </div>
           </div>
-
-          <button 
-            onClick={() => setStep(2)}
-            disabled={!formData.industry || !formData.monthlyBusinessValue || !formData.businessValueType || !formData.productLife}
-            className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-          >
-            {uxText.step1.buttons.continue}
-          </button>
         </div>
-      );
-    }
 
-    if (step === 2) {
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              {uxText.step2.title}
-            </h2>
-            <p className="text-gray-600">
-              {uxText.step2.subtitle}
+        {/* Footer */}
+        <div className="bg-gray-50 border-t border-gray-200 mt-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <p className="text-center text-sm text-gray-500">
+              © 2025 Celerity Consulting Group Inc. Risk Up Front® is a registered trademark.
             </p>
           </div>
+        </div>
+      </div>
+    );
+  };
 
-          <div className="space-y-6">
-            {/* Customer Loss Question */}
-            <div className="p-4 border border-gray-200 rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-3">
-                {uxText.step2.sections.customerLoss.title}
-              </h3>
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {uxText.step2.labels.customerLossMonth}
-                  </label>
-                  <input 
-                    type="number"
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder={uxText.step2.placeholders.customerLossMonth}
-                    value={formData.customerLossMonth}
-                    onChange={(e) => handleInputChange('customerLossMonth', e.target.value)}
-                  />
+  const renderSimpleForm = () => {
+    if (step === 2) {
+      return (
+        <div className="min-h-screen bg-white">
+          {/* Header */}
+          <div className="bg-white border-b border-gray-200">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <img src="/logo.png" alt="Risk Up Front" className="h-24 w-auto" />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {uxText.step2.labels.customerLossValue}
-                  </label>
-                  <input 
-                    type="number"
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder={uxText.step2.placeholders.customerLossValue}
-                    value={formData.customerLossValue}
-                    onChange={(e) => handleInputChange('customerLossValue', e.target.value)}
-                  />
+                <div className="flex items-center space-x-4">
+                  <AlertTriangle className="h-6 w-6 text-red-600" />
+                  <h1 className="text-2xl font-bold text-gray-900">Cost of Being Late Calculator</h1>
                 </div>
-              </div>
-            </div>
-
-            {/* Other Critical Cost Question */}
-            <div className="p-4 border border-gray-200 rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-3">
-                {uxText.step2.sections.otherCost.title}
-              </h3>
-              <div className="mb-3 text-sm text-gray-600">
-                <strong>{uxText.step2.sections.otherCost.examplesTitle}</strong> {uxText.step2.sections.otherCost.examples}
-              </div>
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {uxText.step2.labels.otherCostMonth}
-                  </label>
-                  <input 
-                    type="number"
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder={uxText.step2.placeholders.otherCostMonth}
-                    value={formData.otherCostMonth}
-                    onChange={(e) => handleInputChange('otherCostMonth', e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {uxText.step2.labels.otherCostValue}
-                  </label>
-                  <input 
-                    type="number"
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder={uxText.step2.placeholders.otherCostValue}
-                    value={formData.otherCostValue}
-                    onChange={(e) => handleInputChange('otherCostValue', e.target.value)}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="text-sm text-blue-800">
-                <strong>{uxText.step2.messages.linearCostsTitle}</strong> {uxText.step2.messages.linearCostsDescription}
               </div>
             </div>
           </div>
 
-          <div className="flex space-x-4">
-            <button 
-              onClick={() => setStep(1)}
-              className="flex-1 bg-gray-200 text-gray-800 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors"
-            >
-              {uxText.step2.buttons.back}
-            </button>
-            <button 
-              onClick={calculateCOBL}
-              className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-            >
-              {uxText.step2.buttons.calculate}
-            </button>
+          {/* Content */}
+          <div className="max-w-4xl mx-auto px-4 py-12">
+            <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-8">
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    Non-Linear Cost Questions
+                  </h2>
+                  <p className="text-gray-600">
+                    Risk Up Front methodology: These create step-function costs when deadlines are breached
+                  </p>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Customer Loss Question */}
+                  <div className="p-4 border border-gray-200 rounded-lg">
+                    <h3 className="font-medium text-gray-900 mb-3">
+                      Non-Linear Cost #1: Customer Loss Impact
+                    </h3>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          After how many months of delay would you lose one or more key customers?
+                        </label>
+                        <input 
+                          type="number"
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                          placeholder="e.g., 3 (leave blank if not applicable)"
+                          value={formData.customerLossMonth}
+                          onChange={(e) => handleInputChange('customerLossMonth', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          What would losing those customers be worth? ($)
+                        </label>
+                        <input 
+                          type="number"
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                          placeholder="e.g., 5000000"
+                          value={formData.customerLossValue}
+                          onChange={(e) => handleInputChange('customerLossValue', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Other Critical Cost Question */}
+                  <div className="p-4 border border-gray-200 rounded-lg">
+                    <h3 className="font-medium text-gray-900 mb-3">
+                      Non-Linear Cost #2: Other Critical Impact
+                    </h3>
+                    <div className="mb-3 text-sm text-gray-600">
+                      <strong>Examples:</strong> Regulatory fines, competitive disadvantage, or market share loss.
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          At what month would this other non-linear cost hit?
+                        </label>
+                        <input 
+                          type="number"
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                          placeholder="e.g., 6 (leave blank if not applicable)"
+                          value={formData.otherCostMonth}
+                          onChange={(e) => handleInputChange('otherCostMonth', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          What would this non-linear cost be worth? ($)
+                        </label>
+                        <input 
+                          type="number"
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                          placeholder="e.g., 2000000"
+                          value={formData.otherCostValue}
+                          onChange={(e) => handleInputChange('otherCostValue', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="text-sm text-blue-800">
+                      <strong>Risk Up Front Linear Costs We'll Calculate:</strong> NPV of lost value, linear team costs, and discount rates based on industry standards
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex space-x-4">
+                  <button 
+                    onClick={() => setStep(0)}
+                    className="flex-1 bg-gray-200 text-gray-800 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+                  >
+                    Back
+                  </button>
+                  <button 
+                    onClick={calculateCOBL}
+                    className="flex-1 bg-red-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-red-700 transition-colors"
+                  >
+                    Calculate Risk Up Front Cost of Being Late
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="bg-gray-50 border-t border-gray-200 mt-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              <p className="text-center text-sm text-gray-500">
+                © 2025 Celerity Consulting Group Inc. Risk Up Front® is a registered trademark.
+              </p>
+            </div>
           </div>
         </div>
       );
@@ -431,380 +532,220 @@ const COBLCalculator = () => {
   const renderResults = () => {
     if (!results) return null;
 
-    if (viewMode === 'summary') {
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              {uxText.results.summary.title}
-            </h2>
-            <p className="text-gray-600">
-              {uxText.results.summary.subtitle.replace('{value}', formatCurrency(results.params.monthlyBusinessValue)).replace('{type}', results.businessValueType === 'profit' ? 'profit' : 'cost savings').replace('{life}', results.productLife)}
+    return (
+      <div className="min-h-screen bg-white">
+        {/* Header */}
+        <div className="bg-white border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <img src="/logo.png" alt="Risk Up Front" className="h-24 w-auto" />
+              </div>
+              <div className="flex items-center space-x-4">
+                <AlertTriangle className="h-6 w-6 text-red-600" />
+                <h1 className="text-2xl font-bold text-gray-900">Your Risk Analysis Results</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="max-w-7xl mx-auto px-4 py-12">
+          <div className="space-y-8">
+            {/* Email Confirmation */}
+            <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+              <div className="flex items-start space-x-3">
+                <Mail className="h-6 w-6 text-green-600 mt-0.5" />
+                <div>
+                  <h3 className="font-bold text-green-900 mb-1">Results Sent to Your Email</h3>
+                  <p className="text-sm text-green-800">
+                    We've sent a detailed PDF report to <strong>{formData.email}</strong>. Check your inbox in a few minutes.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Summary Cards */}
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Cost of Being Late Summary</h2>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-6">
+                  <div className="text-sm text-yellow-700 font-medium mb-2">1 Month Late</div>
+                  <div className="text-3xl font-bold text-yellow-900">{formatCurrency(results.summary.oneMonthCost)}</div>
+                </div>
+                <div className="bg-orange-50 border-2 border-orange-400 rounded-lg p-6">
+                  <div className="text-sm text-orange-700 font-medium mb-2">3 Months Late</div>
+                  <div className="text-3xl font-bold text-orange-900">{formatCurrency(results.summary.threeMonthCost)}</div>
+                </div>
+                <div className="bg-red-50 border-2 border-red-400 rounded-lg p-6">
+                  <div className="text-sm text-red-700 font-medium mb-2">6 Months Late</div>
+                  <div className="text-3xl font-bold text-red-900">{formatCurrency(results.summary.sixMonthCost)}</div>
+                </div>
+                <div className="bg-purple-50 border-2 border-purple-400 rounded-lg p-6">
+                  <div className="text-sm text-purple-700 font-medium mb-2">12 Months Late</div>
+                  <div className="text-3xl font-bold text-purple-900">{formatCurrency(results.summary.twelveMonthCost)}</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Graph */}
+            <div className="bg-white border-2 border-gray-200 rounded-lg p-8">
+              <h3 className="text-xl font-bold text-gray-900 mb-6">Cost Impact Over Time</h3>
+              <div className="relative" style={{ height: '400px' }}>
+                {/* Y-axis labels */}
+                <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 pr-2">
+                  <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)))}</span>
+                  <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)) * 0.75)}</span>
+                  <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)) * 0.5)}</span>
+                  <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)) * 0.25)}</span>
+                  <span>$0</span>
+                </div>
+                
+                {/* Chart area */}
+                <div className="ml-24 mr-4">
+                  <div className="flex items-end justify-between h-96 border-l-2 border-b-2 border-gray-300">
+                    {results.monthlyData.map((data, i) => {
+                      const maxCost = Math.max(...results.monthlyData.map(d => d.totalCost));
+                      const heightPercent = maxCost > 0 ? (data.totalCost / maxCost) * 100 : 0;
+                      const barHeight = (heightPercent / 100) * 360;
+                      
+                      return (
+                        <div key={i} className="flex flex-col items-center flex-1 mx-1">
+                          {/* Value label on top */}
+                          <div className="text-xs text-gray-600 mb-1 h-10 flex items-end">
+                            {data.totalCost > 0 && <span className="transform -rotate-45 origin-bottom-left">{formatCurrency(data.totalCost)}</span>}
+                          </div>
+                          
+                          {/* Bar */}
+                          <div className="w-full max-w-12 relative">
+                            <div 
+                              className={`w-full rounded-t-lg transition-all duration-500 ${
+                                i === 0 ? 'bg-green-500' : 
+                                i <= 3 ? 'bg-yellow-500' : 
+                                i <= 6 ? 'bg-orange-500' : 'bg-red-600'
+                              }`}
+                              style={{ 
+                                height: `${barHeight}px`,
+                                minHeight: data.totalCost > 0 ? '4px' : '0px'
+                              }}
+                            ></div>
+                          </div>
+                          
+                          {/* Month label */}
+                          <div className="text-sm text-gray-900 mt-3 font-semibold">
+                            {i === 0 ? 'On Time' : `${data.month}mo`}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  {/* X-axis label */}
+                  <div className="text-center text-base font-medium text-gray-700 mt-6">
+                    Months of Delay
+                  </div>
+                </div>
+              </div>
+
+              {/* Legend */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+                <div className="flex items-center space-x-2">
+                  <div className="w-6 h-6 bg-green-500 rounded"></div>
+                  <span className="text-sm">On Time</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-6 h-6 bg-yellow-500 rounded"></div>
+                  <span className="text-sm">1-3 Months</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-6 h-6 bg-orange-500 rounded"></div>
+                  <span className="text-sm">4-6 Months</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-6 h-6 bg-red-600 rounded"></div>
+                  <span className="text-sm">7+ Months</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Call to Action */}
+            <div className="bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-200 rounded-lg p-8">
+              <div className="text-center">
+                <Calendar className="h-12 w-12 text-red-600 mx-auto mb-4" />
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  Want to Reduce These Risks?
+                </h3>
+                <p className="text-lg text-gray-700 mb-6">
+                  Schedule a free consultation with our Risk Up Front experts to discuss how to minimize your Cost of Being Late.
+                </p>
+                <button 
+                  onClick={() => window.open('https://calendly.com/your-link', '_blank')}
+                  className="bg-red-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-red-700 transition-colors shadow-lg"
+                >
+                  Schedule Your Free Consultation
+                </button>
+              </div>
+            </div>
+
+            {/* Detailed Analysis */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 className="text-lg font-bold text-gray-900 mb-4">Analysis Assumptions</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                <div>
+                  <div className="font-medium text-gray-900 mb-2">Industry: {formData.industry}</div>
+                  <ul className="space-y-1 text-gray-700">
+                    <li>• Discount Rate: {results.discountRate}% annually</li>
+                    <li>• {results.businessValueType === 'profit' ? 'Revenue Ramp' : 'Deployment Period'}: {results.rampMonths} months</li>
+                    {results.params.includeTeamBurn && <li>• Team Cost: {formatCurrency(industryDefaults[formData.industry]?.costPerPerson || 12000)}/person/month</li>}
+                  </ul>
+                </div>
+                <div>
+                  <div className="font-medium text-gray-900 mb-2">Project Details</div>
+                  <ul className="space-y-1 text-gray-700">
+                    <li>• Monthly Value: {formatCurrency(results.params.monthlyBusinessValue)}</li>
+                    <li>• Product Lifetime: {results.productLife} months</li>
+                    {results.params.includeTeamBurn && <li>• Team Size: {parseInt(formData.teamSize)} people</li>}
+                    {results.params.customerLossMonth > 0 && <li>• Customer Loss: Month {results.params.customerLossMonth} ({formatCurrency(results.params.customerLossValue)})</li>}
+                    {results.params.otherCostMonth > 0 && <li>• Other Critical Cost: Month {results.params.otherCostMonth} ({formatCurrency(results.params.otherCostValue)})</li>}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button 
+                onClick={() => setStep(0)}
+                className="flex-1 bg-gray-200 text-gray-800 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors"
+              >
+                New Calculation
+              </button>
+              <button 
+                className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              >
+                Download Full Report (PDF)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="bg-gray-50 border-t border-gray-200 mt-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <p className="text-center text-sm text-gray-500">
+              © 2025 Celerity Consulting Group Inc. Risk Up Front® is a registered trademark.
             </p>
           </div>
-
-          {/* Quick Summary Cards */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <div className="text-sm text-yellow-700 font-medium">{uxText.results.summary.cards.oneMonth}</div>
-              <div className="text-2xl font-bold text-yellow-800">{formatCurrency(results.summary.oneMonthCost)}</div>
-            </div>
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-              <div className="text-sm text-orange-700 font-medium">{uxText.results.summary.cards.threeMonths}</div>
-              <div className="text-2xl font-bold text-orange-800">{formatCurrency(results.summary.threeMonthCost)}</div>
-            </div>
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <div className="text-sm text-red-700 font-medium">{uxText.results.summary.cards.sixMonths}</div>
-              <div className="text-2xl font-bold text-red-800">{formatCurrency(results.summary.sixMonthCost)}</div>
-            </div>
-            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-              <div className="text-sm text-purple-700 font-medium">{uxText.results.summary.cards.twelveMonths}</div>
-              <div className="text-2xl font-bold text-purple-800">{formatCurrency(results.summary.twelveMonthCost)}</div>
-            </div>
-          </div>
-
-          {/* Risk Up Front Calculation Assumptions */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">
-              {uxText.results.summary.sections.assumptions.title}
-            </h3>
-            <div className="mb-4 text-sm text-blue-800">
-              <strong>{uxText.results.summary.sections.assumptions.note}</strong> {uxText.results.summary.sections.assumptions.description}
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <div className="font-medium text-gray-900">{uxText.results.summary.sections.assumptions.industryTitle}: {formData.industry}</div>
-                <ul className="mt-2 space-y-1 text-gray-700">
-                  <li>• {uxText.results.summary.sections.assumptions.discountRate}: {results.discountRate}% {uxText.results.summary.sections.assumptions.annually}</li>
-                  <li>• {results.businessValueType === 'profit' ? uxText.results.summary.sections.assumptions.revenueRamp : uxText.results.summary.sections.assumptions.deploymentPeriod}: {results.rampMonths} {uxText.results.summary.sections.assumptions.months}</li>
-                  {results.params.includeTeamBurn && <li>• {uxText.results.summary.sections.assumptions.teamCost}: {formatCurrency(industryDefaults[formData.industry]?.costPerPerson || 12000)}/{uxText.results.summary.sections.assumptions.personMonth}</li>}
-                </ul>
-              </div>
-              <div>
-                <div className="font-medium text-gray-900">{uxText.results.summary.sections.assumptions.projectTitle}</div>
-                <ul className="mt-2 space-y-1 text-gray-700">
-                  <li>• {uxText.results.summary.sections.assumptions.monthlyValue}: {formatCurrency(results.params.monthlyBusinessValue)}</li>
-                  <li>• {uxText.results.summary.sections.assumptions.productLifetime}: {results.productLife} {uxText.results.summary.sections.assumptions.months}</li>
-                  {results.params.includeTeamBurn && <li>• {uxText.results.summary.sections.assumptions.teamSize}: {parseInt(formData.teamSize)} {uxText.results.summary.sections.assumptions.people}</li>}
-                  {results.params.customerLossMonth > 0 && <li>• {uxText.results.summary.sections.assumptions.customerLoss}: {uxText.results.summary.sections.assumptions.month} {results.params.customerLossMonth} ({formatCurrency(results.params.customerLossValue)})</li>}
-                  {results.params.otherCostMonth > 0 && <li>• {uxText.results.summary.sections.assumptions.otherCriticalCost}: {uxText.results.summary.sections.assumptions.month} {results.params.otherCostMonth} ({formatCurrency(results.params.otherCostValue)})</li>}
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Key Insights */}
-          <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">
-              {uxText.results.summary.sections.insights.title}
-            </h3>
-            <ul className="space-y-2 text-sm">
-              <li className="flex items-start space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full mt-1.5"></div>
-                <span><strong>{uxText.results.summary.sections.insights.linearCostPerMonth}:</strong> {uxText.results.summary.sections.insights.approximately} {formatCurrency(results.monthlyData[1]?.monthlyCost || 0)}</span>
-              </li>
-              <li className="flex items-start space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full mt-1.5"></div>
-                <span><strong>{uxText.results.summary.sections.insights.nonLinearCosts}:</strong> {
-                  (() => {
-                    const firstNonLinear = results.monthlyData.find(d => d.nonLinearCosts > 0);
-                    if (firstNonLinear) {
-                      return `${uxText.results.summary.sections.insights.activateAfter} ${firstNonLinear.month} ${uxText.results.summary.sections.insights.months} (${uxText.results.summary.sections.insights.stepFunctionImpact})`;
-                    } else {
-                      return uxText.results.summary.sections.insights.noneIdentified;
-                    }
-                  })()
-                }</span>
-              </li>
-              <li className="flex items-start space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full mt-1.5"></div>
-                <span><strong>{uxText.results.summary.sections.insights.totalValueAtRisk}:</strong> {formatCurrency(results.onTimeNPV)}</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Integrated Graph */}
-          <div className="bg-white p-6 rounded-lg border">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">
-              {uxText.results.graph.title}
-            </h3>
-            <div className="relative" style={{ height: `${300 + 60}px` }}>
-              {/* Y-axis labels */}
-              <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 pr-2">
-                <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)))}</span>
-                <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)) * 0.75)}</span>
-                <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)) * 0.5)}</span>
-                <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)) * 0.25)}</span>
-                <span>$0</span>
-              </div>
-              
-              {/* Chart area */}
-              <div className="ml-20 mr-4">
-                <div className="flex items-end justify-between h-80 border-l border-b border-gray-300">
-                  {results.monthlyData.map((data, i) => {
-                    const maxCost = Math.max(...results.monthlyData.map(d => d.totalCost));
-                    const heightPercent = maxCost > 0 ? (data.totalCost / maxCost) * 100 : 0;
-                    const barHeight = (heightPercent / 100) * 300;
-                    
-                    return (
-                      <div key={i} className="flex flex-col items-center flex-1 mx-1">
-                        {/* Value label on top */}
-                        <div className="text-xs text-gray-600 mb-1 h-8 flex items-end">
-                          {data.totalCost > 0 && formatCurrency(data.totalCost)}
-                        </div>
-                        
-                        {/* Bar */}
-                        <div className="w-full max-w-8 relative">
-                          <div 
-                            className={`w-full rounded-t transition-all duration-500 ${
-                              i === 0 ? 'bg-green-500' : 
-                              i <= 3 ? 'bg-yellow-500' : 
-                              i <= 6 ? 'bg-orange-500' : 'bg-red-500'
-                            }`}
-                            style={{ 
-                              height: `${barHeight}px`,
-                              minHeight: data.totalCost > 0 ? '4px' : '0px'
-                            }}
-                          ></div>
-                        </div>
-                        
-                        {/* Month label */}
-                        <div className="text-xs text-gray-700 mt-2 font-medium">
-                          {i === 0 ? uxText.results.graph.labels.onTime : `${data.month}m`}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                
-                {/* X-axis label */}
-                <div className="text-center text-sm text-gray-600 mt-4">
-                  {uxText.results.graph.labels.monthsOfDelay}
-                </div>
-              </div>
-            </div>
-
-            {/* Legend */}
-            <div className="grid grid-cols-2 gap-4 text-sm mt-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-green-500 rounded"></div>
-                <span>{uxText.results.graph.legend.onTime}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-                <span>{uxText.results.graph.legend.oneToThreeMonths}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-orange-500 rounded"></div>
-                <span>{uxText.results.graph.legend.fourToSixMonths}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-red-500 rounded"></div>
-                <span>{uxText.results.graph.legend.sevenPlusMonths}</span>
-              </div>
-            </div>
-
-            {/* Key Insights for Graph */}
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-4">
-              <h4 className="font-medium text-gray-900 mb-2">{uxText.results.graph.sections.insights.title}</h4>
-              <ul className="text-sm text-gray-700 space-y-1">
-                <li>• <strong>{uxText.results.graph.sections.insights.nonLinearCosts}:</strong> {
-                  (() => {
-                    const customerMonth = results.params.customerLossMonth;
-                    const otherMonth = results.params.otherCostMonth;
-                    if (customerMonth > 0 && otherMonth > 0) {
-                      return `${uxText.results.graph.sections.insights.createJumps} ${customerMonth} ${uxText.results.graph.sections.insights.and} ${otherMonth}`;
-                    } else if (customerMonth > 0) {
-                      return `${uxText.results.graph.sections.insights.createJump} ${customerMonth}`;
-                    } else if (otherMonth > 0) {
-                      return `${uxText.results.graph.sections.insights.createJump} ${otherMonth}`;
-                    } else {
-                      return uxText.results.graph.sections.insights.noneApplied;
-                    }
-                  })()
-                }</li>
-                {results.params.includeTeamBurn && <li>• <strong>{uxText.results.graph.sections.insights.linearTeamCosts}:</strong> {formatCurrency(results.params.teamBurnRate)}/{uxText.results.graph.sections.insights.perMonth}</li>}
-                <li>• <strong>{uxText.results.graph.sections.insights.linearValueLoss}</strong> {uxText.results.graph.sections.insights.acceleratesWithDelays} {results.discountRate}% {uxText.results.graph.sections.insights.discountRate}</li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Removed view toggle buttons from summary to make graph automatic */}
         </div>
-      );
-    }
-
-    if (viewMode === 'table') {
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              {uxText.results.table.title}
-            </h2>
-            <button 
-              onClick={() => setViewMode('summary')}
-              className="text-blue-600 hover:underline"
-            >
-              {uxText.results.table.backToSummary}
-            </button>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse border border-gray-300 text-sm">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="border border-gray-300 p-2 text-left">{uxText.results.table.headers.monthsLate}</th>
-                  <th className="border border-gray-300 p-2 text-right">{uxText.results.table.headers.lostBusinessValue}</th>
-                  {results.params.includeTeamBurn && <th className="border border-gray-300 p-2 text-right">{uxText.results.table.headers.linearTeamCosts}</th>}
-                  <th className="border border-gray-300 p-2 text-right">{uxText.results.table.headers.linearCostSubtotal}</th>
-                  <th className="border border-gray-300 p-2 text-right">{uxText.results.table.headers.nonLinearCosts}</th>
-                  <th className="border border-gray-300 p-2 text-right font-bold">{uxText.results.table.headers.totalCost}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {results.monthlyData.map((row, i) => (
-                  <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                    <td className="border border-gray-300 p-2 font-medium">{row.month}</td>
-                    <td className="border border-gray-300 p-2 text-right">{formatCurrency(row.lostBusinessValue)}</td>
-                    {results.params.includeTeamBurn && <td className="border border-gray-300 p-2 text-right">{formatCurrency(row.additionalBurn)}</td>}
-                    <td className="border border-gray-300 p-2 text-right">{formatCurrency(row.linearCosts)}</td>
-                    <td className="border border-gray-300 p-2 text-right">{formatCurrency(row.nonLinearCosts)}</td>
-                    <td className="border border-gray-300 p-2 text-right font-bold text-red-600">{formatCurrency(row.totalCost)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      );
-    }
-
-    if (viewMode === 'graph') {
-      return (
-        <div className="space-y-6">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              {uxText.results.graph.title}
-            </h2>
-            <button 
-              onClick={() => setViewMode('summary')}
-              className="text-blue-600 hover:underline"
-            >
-              {uxText.results.graph.backToSummary}
-            </button>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg border">
-            <div className="relative" style={{ height: `${300 + 60}px` }}>
-              {/* Y-axis labels */}
-              <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-500 pr-2">
-                <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)))}</span>
-                <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)) * 0.75)}</span>
-                <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)) * 0.5)}</span>
-                <span>{formatCurrency(Math.max(...results.monthlyData.map(d => d.totalCost)) * 0.25)}</span>
-                <span>$0</span>
-              </div>
-              
-              {/* Chart area */}
-              <div className="ml-20 mr-4">
-                <div className="flex items-end justify-between h-80 border-l border-b border-gray-300">
-                  {results.monthlyData.map((data, i) => {
-                    const maxCost = Math.max(...results.monthlyData.map(d => d.totalCost));
-                    const heightPercent = maxCost > 0 ? (data.totalCost / maxCost) * 100 : 0;
-                    const barHeight = (heightPercent / 100) * 300;
-                    
-                    return (
-                      <div key={i} className="flex flex-col items-center flex-1 mx-1">
-                        {/* Value label on top */}
-                        <div className="text-xs text-gray-600 mb-1 h-8 flex items-end">
-                          {data.totalCost > 0 && formatCurrency(data.totalCost)}
-                        </div>
-                        
-                        {/* Bar */}
-                        <div className="w-full max-w-8 relative">
-                          <div 
-                            className={`w-full rounded-t transition-all duration-500 ${
-                              i === 0 ? 'bg-green-500' : 
-                              i <= 3 ? 'bg-yellow-500' : 
-                              i <= 6 ? 'bg-orange-500' : 'bg-red-500'
-                            }`}
-                            style={{ 
-                              height: `${barHeight}px`,
-                              minHeight: data.totalCost > 0 ? '4px' : '0px'
-                            }}
-                          ></div>
-                        </div>
-                        
-                        {/* Month label */}
-                        <div className="text-xs text-gray-700 mt-2 font-medium">
-                          {i === 0 ? uxText.results.graph.labels.onTime : `${data.month}m`}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                
-                {/* X-axis label */}
-                <div className="text-center text-sm text-gray-600 mt-4">
-                  {uxText.results.graph.labels.monthsOfDelay}
-                </div>
-              </div>
-            </div>
-
-            {/* Legend */}
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-green-500 rounded"></div>
-                <span>{uxText.results.graph.legend.onTime}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-                <span>{uxText.results.graph.legend.oneToThreeMonths}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-orange-500 rounded"></div>
-                <span>{uxText.results.graph.legend.fourToSixMonths}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-4 h-4 bg-red-500 rounded"></div>
-                <span>{uxText.results.graph.legend.sevenPlusMonths}</span>
-              </div>
-            </div>
-
-            {/* Key Insights */}
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <h4 className="font-medium text-gray-900 mb-2">{uxText.results.graph.sections.insights.title}</h4>
-              <ul className="text-sm text-gray-700 space-y-1">
-                <li>• <strong>{uxText.results.graph.sections.insights.nonLinearCosts}:</strong> {
-                  (() => {
-                    const customerMonth = results.params.customerLossMonth;
-                    const otherMonth = results.params.otherCostMonth;
-                    if (customerMonth > 0 && otherMonth > 0) {
-                      return `${uxText.results.graph.sections.insights.createJumps} ${customerMonth} ${uxText.results.graph.sections.insights.and} ${otherMonth}`;
-                    } else if (customerMonth > 0) {
-                      return `${uxText.results.graph.sections.insights.createJump} ${customerMonth}`;
-                    } else if (otherMonth > 0) {
-                      return `${uxText.results.graph.sections.insights.createJump} ${otherMonth}`;
-                    } else {
-                      return uxText.results.graph.sections.insights.noneApplied;
-                    }
-                  })()
-                }</li>
-                {results.params.includeTeamBurn && <li>• <strong>{uxText.results.graph.sections.insights.linearTeamCosts}:</strong> {formatCurrency(results.params.teamBurnRate)}/{uxText.results.graph.sections.insights.perMonth}</li>}
-                <li>• <strong>{uxText.results.graph.sections.insights.linearValueLoss}</strong> {uxText.results.graph.sections.insights.acceleratesWithDelays} {results.discountRate}% {uxText.results.graph.sections.insights.discountRate}</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      );
-    }
+      </div>
+    );
   };
 
   const resetCalculator = () => {
-    setStep(0); // Reset to homepage
+    setStep(0);
     setResults(null);
-    setViewMode('summary');
     setFormData({
+      email: '',
       industry: '',
       teamSize: '',
       monthlyBusinessValue: '',
@@ -819,92 +760,25 @@ const COBLCalculator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="text-center">
-            <div className="flex items-center justify-center space-x-4 mb-8">
-              <img src="/logo.png" alt="Celerity Consulting Group Logo" className="h-16 w-16" />
-              <div>
-                <h1 className="text-5xl font-bold text-gray-900 mb-4">
-                  {uxText.header.title}
-                </h1>
-                <p className="text-xl text-gray-600 mb-2">
-                  {uxText.header.subtitle}
-                </p>
-                <p className="text-lg text-gray-500">
-                  {uxText.header.poweredBy}
-                </p>
-              </div>
-            </div>
-            
-            <div className="max-w-3xl mx-auto">
-              <p className="text-lg text-gray-700 mb-8">
-                Discover the true cost of project delays with our advanced Risk Up Front methodology. Calculate linear and non-linear costs in under 60 seconds.
-              </p>
-              <button 
-                onClick={() => setStep(1)}
-                className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors shadow-lg"
-              >
-                Start Your Risk Assessment
-              </button>
-            </div>
-          </div>
-        </div>
-        
-        {/* Background decoration */}
-        <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm -z-10"></div>
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full opacity-20 -z-10"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200 rounded-full opacity-20 -z-10"></div>
-      </div>
-
-      {/* Content */}
-      {!isCalculating && step > 0 && (
-        <div className="max-w-4xl mx-auto px-4 py-16">
-          <div className="bg-white rounded-lg shadow-xl p-8">
-            {results ? renderResults() : renderSimpleForm()}
-            
-            {results && (
-              <div className="mt-8 space-y-4">
-                <button className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors">
-                  {uxText.results.buttons.downloadReport}
-                </button>
-                <div className="flex space-x-4">
-                  <button className="flex-1 bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 transition-colors">
-                    {uxText.results.buttons.scheduleAssessment}
-                  </button>
-                  <button 
-                    onClick={resetCalculator}
-                    className="flex-1 bg-gray-200 text-gray-800 py-3 px-6 rounded-lg font-medium hover:bg-gray-300 transition-colors"
-                  >
-                    {uxText.results.buttons.newCalculation}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Loading State */}
+    <>
       {isCalculating && (
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            {uxText.loading.title}
-          </h3>
-          <p className="text-gray-600">
-            {uxText.loading.description.replace('{life}', formData.productLife || 36)}
-          </p>
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-red-600 mx-auto mb-4"></div>
+            <h3 className="text-xl font-medium text-gray-900 mb-2">
+              Calculating Your Risk Up Front Cost of Being Late
+            </h3>
+            <p className="text-gray-600">
+              Analyzing linear and non-linear cost impact across {formData.productLife || 36} month project lifecycle...
+            </p>
+          </div>
         </div>
       )}
 
-      {/* Footer */}
-      <div className="text-center mt-16 text-sm text-gray-500">
-        <p>{uxText.footer.text}</p>
-      </div>
-    </div>
+      {!isCalculating && step === 0 && renderHomePage()}
+      {!isCalculating && step === 2 && renderSimpleForm()}
+      {!isCalculating && step === 3 && renderResults()}
+    </>
   );
 };
 
